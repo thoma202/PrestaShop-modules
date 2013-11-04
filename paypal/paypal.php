@@ -73,7 +73,7 @@ class PayPal extends PaymentModule
 	{
 		$this->name = 'paypal';
 		$this->tab = 'payments_gateways';
-		$this->version = '3.6.1';
+		$this->version = '3.5.6';
 
 		$this->currencies = true;
 		$this->currencies_mode = 'radio';
@@ -600,8 +600,7 @@ class PayPal extends PaymentModule
 
 	public function hookBackOfficeHeader()
 	{
-		if ((strcmp(Tools::getValue('configure'), $this->name) === 0) ||
-			(strcmp(Tools::getValue('module_name'), $this->name) === 0))
+		if ((int)strcmp((_PS_VERSION_ < '1.5' ? Tools::getValue('configure') : Tools::getValue('module_name')), $this->name) == 0)
 		{
 			if (_PS_VERSION_ < '1.5')
 			{
@@ -1273,25 +1272,9 @@ class PayPal extends PaymentModule
 		}
 	}
 
-	/**
-	 * Check if the current page use SSL connection on not
-	 *
-	 * @return bool uses SSL
-	 */
-	public function usingSecureMode()
-	{
-		if (isset($_SERVER['HTTPS']))
-			return ($_SERVER['HTTPS'] == 1 || strtolower($_SERVER['HTTPS']) == 'on');
-		// $_SERVER['SSL'] exists only in some specific configuration
-		if (isset($_SERVER['SSL']))
-			return ($_SERVER['SSL'] == 1 || strtolower($_SERVER['SSL']) == 'on');
-
-		return false;
-	}
-
 	protected function getCurrentUrl()
 	{
-		$protocol_link = $this->usingSecureMode() ? 'https://' : 'http://';
+		$protocol_link = Tools::usingSecureMode() ? 'https://' : 'http://';
 		$request = $_SERVER['REQUEST_URI'];
 		$pos = strpos($request, '?');
 		

@@ -1,0 +1,12 @@
+class_name: SeleniumGuy
+modules:
+    enabled: 
+        - SeleniumHelper
+        - Selenium2
+    config:
+        Selenium2:
+            url: 'http://ps-156.dev.202-ecommerce.com/'
+            browser: firefox
+            delay: 800   
+            capabilities:
+                unexpectedAlertBehaviour:'accept'

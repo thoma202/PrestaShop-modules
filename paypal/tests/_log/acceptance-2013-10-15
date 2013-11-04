@@ -1,0 +1,11 @@
+[2013-10-15 02:05:00] WelcomeCept.php.INFO: am on page "/" [] []
+[2013-10-15 02:05:00] WelcomeCept.php.INFO: see "TAGS" [] []
+[2013-10-15 02:05:00] WelcomeCept.php.INFO: PASSED [] []
+[2013-10-15 02:06:03] WelcomeCept.php.INFO: am on page "/" [] []
+[2013-10-15 02:06:03] WelcomeCept.php.INFO: see "TAGSXX" [] []
+[2013-10-15 02:06:03] WelcomeCept.php.ALERT: Failed asserting that 
+-->  <bold>/violinfinder/</bold><info>body {background-color: #ffffff; color: #000000;} body, td, th, h1, h2 {font-family: sans-serif;} pre {margin: 0px; font-family: monospace;} a:link {color: #000099; text-decoration: none; background-color: #ffffff;} a:hover {text-decoration: underline;} table {border-collapse: collapse;} .center {te</info>
+<debug>[Content too long to display. See complete response in '_log' directory]</debug>
+--> contains "tagsxx". [] []
+[2013-10-15 02:06:03] WelcomeCept.php.INFO: # FAILED # [] []
+[2013-10-15 02:06:03] WelcomeCept.php.INFO: PASSED [] []
