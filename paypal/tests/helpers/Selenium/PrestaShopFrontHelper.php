@@ -1,6 +1,6 @@
 <?php 
 
-use \SeleniumGuy
+use \SeleniumGuy;
 
 class PrestaShopFrontHelper
 {
