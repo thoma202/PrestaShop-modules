@@ -1,6 +1,6 @@
 <?php 
 
-use \SeleniumGuy
+use \SeleniumGuy;
 
 class ProductConfiguration
 {
@@ -9,6 +9,9 @@ class ProductConfiguration
 	private $productData = array(
 		'ipodnano' => array(
 			'id' => 1,
+			'color' => array(
+				'pink' => '5',
+			),
 		),
 		'ipodshuffle' => array(
 			'id' => 2,		
@@ -35,8 +38,13 @@ class ProductConfiguration
 		$this->key = $key;
 	}
 
+	public function getPageUrl()
+	{
+		return '/'.$this->get('id'). '-'.$this->key.'.html';
+	}
+
 	public function get($data)
 	{
-		return $this->userData[$this->key][$data];
+		return $this->productData[$this->key][$data];
 	}
 }

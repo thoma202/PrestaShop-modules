@@ -13,6 +13,12 @@ class PayPalUserConfiguration
 		),
 		'seller_evolution_fr' => array(
 			'api_business_account' => 'tbigueres-pro@202-ecommerce.com'
+		),
+		'buyer_fr' => array(
+			'cc_number' => '4999691754559905',
+			'expdate_month' => '10',
+			'expdate_year' => '18',
+			'crypto' => 'cvv2_number',
 		)
 	);
 
