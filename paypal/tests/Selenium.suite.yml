@@ -3,9 +3,10 @@ modules:
     enabled: 
         - SeleniumHelper
         - Selenium2
+        # - Db
     config:
         Selenium2:
-            url: 'http://ps-156.dev.202-ecommerce.com/'
+            url: 'http://paypal-156.dev.202-ecommerce.com/'
             browser: firefox
             delay: 800   
             capabilities:

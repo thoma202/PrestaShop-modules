@@ -13,14 +13,14 @@ class PrestaShopGlobalHelper
     }
 
 	static $pagesURL = array(
-		'modules' => '/bb/index.php?controller=AdminModules'
+		'modules' => '/bb/index.php?controller=AdminModules',
+        'orderPreferences' => '/bb/index.php?controller=AdminOrderPreferences'
 	);	
 
     static public function goToModulesPageToBeginTest()
     {
         self::loginBackOffice();
         PrestaShopGlobalHelper::goToPage('modules');
-
     }
 
     // tests
@@ -59,4 +59,11 @@ class PrestaShopGlobalHelper
         self::$I->click('.configure_'.$name);
     }
     
+    static public function setOPC($true = true)
+    {
+        self::goToPage('orderPreferences');
+        self::$I->SelectOption('form select[name=PS_ORDER_PROCESS_TYPE]', '1');
+        self::$I->click('#desc-configuration-save');
+    }
+
 }

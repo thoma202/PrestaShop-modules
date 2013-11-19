@@ -9,14 +9,4 @@ class PrestaShopFrontHelper
     {
         self::$I = $I;
     }
-
-
-	static public function addProductToCart($product)
-	{
-		$productPage = new ProductPageHelper($product, 'rose', self::$I);
-		$productPage->goToPage();
-		$productPage->addToCart();
-	}
-
-
 }

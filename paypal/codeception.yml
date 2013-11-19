@@ -12,7 +12,7 @@ settings:
 modules:
     config:
         Db:
-            dsn: ''
-            user: ''
-            password: ''
+            dsn: 'mysql:host=176.31.151.0;dbname=paypal-156'
+            user: 'paypal156test'
+            password: 'V6GaAz6vCZUwp7AN'
             dump: tests/_data/dump.sql

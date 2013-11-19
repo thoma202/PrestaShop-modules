@@ -19,6 +19,9 @@ class PayPalUserConfiguration
 			'expdate_month' => '10',
 			'expdate_year' => '18',
 			'crypto' => 'cvv2_number',
+
+			'login_email' => 'tbigueres-buy-fr-1000@202-ecommerce.com',
+			'login_password' => '202EcommercePaypal'
 		)
 	);
 

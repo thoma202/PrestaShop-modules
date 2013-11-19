@@ -27,6 +27,23 @@ class PaypalConfigurationHelper
     	PaypalConfigurationHelper::installModule();
 	}
 
+	/**
+	 * I am already logged in
+	 * Paypal is uninstalled
+	 * @param [type] $method [description]
+	 */
+	static public function setPaypal($method)
+	{
+		PrestaShopGlobalHelper::goToPage('modules');
+    	PayPalConfigurationHelper::goToConfigurePage();
+    	if($method == 'integral')
+    		self::configureAsPayPalIntegral();
+    	else if($method == 'integral_evolution')
+    		self::configureAsPayPalIntegralEvolution();
+    	else if($method == 'option')
+    		self::configureAsPayPalOptionPlus();
+	}
+
 	static public function configureAsPayPalIntegral()
 	{
 		

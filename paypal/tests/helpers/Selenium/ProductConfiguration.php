@@ -11,6 +11,13 @@ class ProductConfiguration
 			'id' => 1,
 			'color' => array(
 				'pink' => '5',
+				'cyan' => '4', 
+				'grey' => '3',
+				'green' => '5',
+				'orange' => '6', 
+				'black' => '14', 
+				'lila' => '18', 
+				'yellow' => '19',
 			),
 		),
 		'ipodshuffle' => array(
