@@ -40,6 +40,8 @@ class PaypalPaymentHelper
 		self::$I->click('#Card_2');
 		self::$I->click('#continue');
 
+		self::$I->wait(2000);
+
 		self::$I->click('#continue_abovefold');
 		self::$I->click('input[name=confirmation]');
 	}
