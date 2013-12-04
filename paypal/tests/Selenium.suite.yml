@@ -3,7 +3,7 @@ modules:
     enabled: 
         - SeleniumHelper
         - Selenium2
-        # - Db
+        #- Db
     config:
         Selenium2:
             url: 'http://paypal-156.dev.202-ecommerce.com/'

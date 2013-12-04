@@ -10,9 +10,9 @@ settings:
     memory_limit: 1024M
     log: true
 modules:
-    config:
-        Db:
-            dsn: 'mysql:host=176.31.151.0;dbname=paypal-156'
-            user: 'paypal156test'
-            password: 'V6GaAz6vCZUwp7AN'
-            dump: tests/_data/dump.sql
+   config:
+       Db:
+           dsn: 'mysql:host=176.31.151.0;dbname=paypal-156'
+           user: 'paypal156test'
+           password: 'KHNQ4WTKueDAtVmb'
+           dump: tests/_data/dump.sql

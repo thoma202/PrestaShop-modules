@@ -25,9 +25,9 @@ class PaypalPaymentHelper
 		self::$I->click('input[name=confirmation]');
 	}
 
-	static public function payIntegralExpressWithGoodInformations()
+	static public function payIntegralWithWrongInformations10486()
 	{
-		$buyer = new PayPalUserConfiguration('buyer_fr');
+		$buyer = new PayPalUserConfiguration('buyer_fr_10486');
 
 		self::$I->click('#paypal_process_payment');
 		self::$I->wait(5000);
@@ -36,9 +36,12 @@ class PaypalPaymentHelper
 		self::$I->fillField('#login_password', $buyer->get('login_password'));
 		self::$I->click('#submitLogin');
 
+		self::$I->click('#funding_select');
+		self::$I->click('#Card_2');
+		self::$I->click('#continue');
+
 		self::$I->click('#continue_abovefold');
 		self::$I->click('input[name=confirmation]');
-
 	}
 
 }

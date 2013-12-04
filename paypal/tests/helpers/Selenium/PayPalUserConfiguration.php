@@ -22,7 +22,11 @@ class PayPalUserConfiguration
 
 			'login_email' => 'tbigueres-buy-fr-1000@202-ecommerce.com',
 			'login_password' => '202EcommercePaypal'
-		)
+		),
+		'buyer_fr_10486' => array(
+			'login_email' => 'tbigueres-buy-error10486@202-ecommerce.com',
+			'login_password' => '202EcommercePaypal'
+		),
 	);
 
 	public function __construct($key)
