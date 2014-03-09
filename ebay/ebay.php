@@ -1364,26 +1364,31 @@ class Ebay extends Module
 			$extra_fees = Tools::getValue('extrafee');
 
 			foreach ($ebay_carriers as $key => $ebay_carrier)
-				EbayShipping::insert($ebay_carrier, $ps_carriers[$key], $extra_fees[$key]);
+			{
+				// modif
+				if (!empty($ebay_carrier) && !empty($ps_carriers[$key]))
+					EbayShipping::insert($ebay_carrier, $ps_carriers[$key], $extra_fees[$key]);
+			}
 		}
 
 		Db::getInstance()->Execute('TRUNCATE '._DB_PREFIX_.'ebay_shipping_international_zone');
-
 		if ($ebay_carriers_international = Tools::getValue('ebayCarrier_international'))
 		{
 			$ps_carriers_international = Tools::getValue('psCarrier_international');
 			$extra_fees_international = Tools::getValue('extrafee_international');
 			$international_shipping_locations = Tools::getValue('internationalShippingLocation');
 			$international_excluded_shipping_locations = Tools::getValue('internationalExcludedShippingLocation');
-
 			foreach ($ebay_carriers_international as $key => $ebay_carrier_international)
 			{
-				EbayShipping::insert($ebay_carrier_international, $ps_carriers_international[$key], $extra_fees_international[$key], true);
-				$last_id = EbayShipping::getLastShippingId();
+				if (!empty($ebay_carrier_international) && !empty($ps_carriers_international[$key]))
+				{
+					EbayShipping::insert($ebay_carrier_international, $ps_carriers_international[$key], $extra_fees_international[$key], true);
+					$last_id = EbayShipping::getLastShippingId();
 
-				if (isset($international_shipping_locations[$key]))
-					foreach (array_keys($international_shipping_locations[$key]) as $id_ebay_zone)
-						EbayShippingInternationalZone::insert($last_id, $id_ebay_zone);
+					if (isset($international_shipping_locations[$key]))
+						foreach (array_keys($international_shipping_locations[$key]) as $id_ebay_zone)
+							EbayShippingInternationalZone::insert($last_id, $id_ebay_zone);
+				}
 			}
 		}
 	}
@@ -1429,6 +1434,12 @@ class Ebay extends Module
 		else
 			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
 
+		// Modif
+		$zones = Zone::getZones(true);
+		foreach ($zones as &$zone)
+			$zone['carriers'] = Carrier::getCarriers($this->context->language->id, true, false, $zone['id_zone']);
+		// end modif
+		
 		$this->smarty->assign(array(
 			'eBayCarrier' => $this->_getCarriers(),
 			'psCarrier' => Carrier::getCarriers($configs['PS_LANG_DEFAULT']),
@@ -1443,7 +1454,8 @@ class Ebay extends Module
 			'formUrl' => $this->_getUrl($url_vars),
 			'ebayZoneNational' => (isset($configs['EBAY_ZONE_NATIONAL']) ? $configs['EBAY_ZONE_NATIONAL'] : false),
 			'ebayZoneInternational' => (isset($configs['EBAY_ZONE_INTERNATIONAL']) ? $configs['EBAY_ZONE_INTERNATIONAL'] : false),
-			'ebay_token' => $configs['EBAY_SECURITY_TOKEN']			
+			'ebay_token' => $configs['EBAY_SECURITY_TOKEN'],
+			'newPrestashopZone' => $zones
 		));
 
 		return $this->display(dirname(__FILE__), '/views/templates/hook/shipping.tpl');
