@@ -44,8 +44,8 @@ class EbayRequest
 	private $apiCall;
 	private $loginUrl;
 	private $compatibility_level;
-	private $debug = false;
-	private $dev = false;
+	private $debug = true;
+	private $dev = true;
 	private $ebay_country;
 
 	private $smarty_data;
@@ -365,7 +365,7 @@ class EbayRequest
 
 		$vars = array(
 			'sku' => 'prestashop-'.$data['id_product'],
-			'title' => substr($data['name'], 0, 80),
+			'title' => substr($this->prepareTitle($data), 0, 80),
 			'pictures' => isset($data['pictures']) ? $data['pictures'] : array(),
 			'description' => $data['description'],
 			'category_id' => $data['categoryId'],
@@ -411,7 +411,7 @@ class EbayRequest
 			'price_update' => !isset($data['noPriceUpdate']),
 			'start_price' => $data['price'],
 			'resynchronize' => (Configuration::get('EBAY_SYNC_OPTION_RESYNC') != 1),
-			'title' => substr($data['name'], 0, 80),
+			'title' => substr($this->prepareTitle($data), 0, 80),
 			'description' => $data['description'],
 			'shipping_details' => $this->_getShippingDetails($data),
 			'buyer_requirements_details' => $this->_getBuyerRequirementDetails($data),
@@ -462,7 +462,7 @@ class EbayRequest
 			'pay_pal_email_address' => Configuration::get('EBAY_PAYPAL_EMAIL'),
 			'postal_code' => Configuration::get('EBAY_SHOP_POSTALCODE'),
 			'category_id' => $data['categoryId'],
-			'title' => substr($data['name'], 0, 80),
+			'title' => substr($this->prepareTitle($data), 0, 80),
 			'pictures' => isset($data['pictures']) ? $data['pictures'] : array(),
 			'return_policy' => $this->_getReturnPolicy(),
 			'price_update' => !isset($data['noPriceUpdate']),
@@ -523,7 +523,7 @@ class EbayRequest
 			'value' => htmlentities($data['brand']),
 			'return_policy' => $this->_getReturnPolicy(),
 			'resynchronize' => (Configuration::get('EBAY_SYNC_OPTION_RESYNC') != 1),
-			'title' => substr($data['name'], 0, 80),
+			'title' => substr($this->prepareTitle($data), 0, 80),
 			'description' => $data['description'],
 			'shipping_details' => $this->_getShippingDetails($data),
 			'buyer_requirements_details' => $this->_getBuyerRequirementDetails($data),
@@ -815,6 +815,38 @@ class EbayRequest
 
 	public function getDev() {
 		return $this->dev;
+	}
+
+	private function prepareTitle($data)
+	{
+		$product = new Product($data['real_id_product'], false, $data['id_lang']);
+		$features = Feature::getFeatures($data['id_lang']);
+		$features_product = $product->getFrontFeatures($data['id_lang']);
+		$tags = array(
+			'{TITLE}',
+			'{BRAND}',
+			'{REFERENCE}',
+			'{EAN}',
+		);
+		$values = array(
+			$data['name'],
+			$data['manufacturer_name'],
+			$data['reference'],
+			$data['ean13'],
+		);
+		foreach ($features as $feature)
+		{
+			$tags[] = trim(str_replace(' ', '_', strtoupper('{FEATURE_'.$feature['name'].'}')));
+			$hasFeature = array_map(function($val) use ($feature) {
+				return ((int)$val['id_feature'] == (int)$feature['id_feature'] ? $val['value'] : false);
+			}, $features_product);
+			if ($hasFeature[0])
+				$values[] = $hasFeature[0];
+			else
+				$values[] = '';
+		}
+		
+		return EbaySynchronizer::fillTemplateTitle($tags, $values, $data['titleTemplate']);
 	}
 
 }

@@ -208,6 +208,7 @@ class Ebay extends Module
 
 		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', ''); // fix to work around the PrestaShop bug when saving html for a configuration key that doesn't exist yet
 		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $this->_getProductTemplateContent(), true);
+		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', '{TITLE}');
 		$this->setConfiguration('EBAY_ORDER_LAST_UPDATE', date('Y-m-d\TH:i:s.000\Z'));
 		$this->setConfiguration('EBAY_INSTALL_DATE', date('Y-m-d\TH:i:s.000\Z'));
 		$this->setConfiguration('EBAY_DELIVERY_TIME', 2);
@@ -1364,26 +1365,31 @@ class Ebay extends Module
 			$extra_fees = Tools::getValue('extrafee');
 
 			foreach ($ebay_carriers as $key => $ebay_carrier)
-				EbayShipping::insert($ebay_carrier, $ps_carriers[$key], $extra_fees[$key]);
+			{
+				// modif
+				if (!empty($ebay_carrier) && !empty($ps_carriers[$key]))
+					EbayShipping::insert($ebay_carrier, $ps_carriers[$key], $extra_fees[$key]);
+			}
 		}
 
 		Db::getInstance()->Execute('TRUNCATE '._DB_PREFIX_.'ebay_shipping_international_zone');
-
 		if ($ebay_carriers_international = Tools::getValue('ebayCarrier_international'))
 		{
 			$ps_carriers_international = Tools::getValue('psCarrier_international');
 			$extra_fees_international = Tools::getValue('extrafee_international');
 			$international_shipping_locations = Tools::getValue('internationalShippingLocation');
 			$international_excluded_shipping_locations = Tools::getValue('internationalExcludedShippingLocation');
-
 			foreach ($ebay_carriers_international as $key => $ebay_carrier_international)
 			{
-				EbayShipping::insert($ebay_carrier_international, $ps_carriers_international[$key], $extra_fees_international[$key], true);
-				$last_id = EbayShipping::getLastShippingId();
+				if (!empty($ebay_carrier_international) && !empty($ps_carriers_international[$key]))
+				{
+					EbayShipping::insert($ebay_carrier_international, $ps_carriers_international[$key], $extra_fees_international[$key], true);
+					$last_id = EbayShipping::getLastShippingId();
 
-				if (isset($international_shipping_locations[$key]))
-					foreach (array_keys($international_shipping_locations[$key]) as $id_ebay_zone)
-						EbayShippingInternationalZone::insert($last_id, $id_ebay_zone);
+					if (isset($international_shipping_locations[$key]))
+						foreach (array_keys($international_shipping_locations[$key]) as $id_ebay_zone)
+							EbayShippingInternationalZone::insert($last_id, $id_ebay_zone);
+				}
 			}
 		}
 	}
@@ -1429,6 +1435,12 @@ class Ebay extends Module
 		else
 			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
 
+		// Modif
+		$zones = Zone::getZones(true);
+		foreach ($zones as &$zone)
+			$zone['carriers'] = Carrier::getCarriers($this->context->language->id, true, false, $zone['id_zone']);
+		// end modif
+		
 		$this->smarty->assign(array(
 			'eBayCarrier' => $this->_getCarriers(),
 			'psCarrier' => Carrier::getCarriers($configs['PS_LANG_DEFAULT']),
@@ -1443,7 +1455,8 @@ class Ebay extends Module
 			'formUrl' => $this->_getUrl($url_vars),
 			'ebayZoneNational' => (isset($configs['EBAY_ZONE_NATIONAL']) ? $configs['EBAY_ZONE_NATIONAL'] : false),
 			'ebayZoneInternational' => (isset($configs['EBAY_ZONE_INTERNATIONAL']) ? $configs['EBAY_ZONE_INTERNATIONAL'] : false),
-			'ebay_token' => $configs['EBAY_SECURITY_TOKEN']			
+			'ebay_token' => $configs['EBAY_SECURITY_TOKEN'],
+			'newPrestashopZone' => $zones
 		));
 
 		return $this->display(dirname(__FILE__), '/views/templates/hook/shipping.tpl');
@@ -1480,6 +1493,8 @@ class Ebay extends Module
 		$smarty_vars = array(
 			'action_url' => $action_url,
 			'ebay_product_template' => $ebay_product_template,
+			'ebay_product_template_title' => Configuration::get('EBAY_PRODUCT_TEMPLATE_TITLE'),
+			'features_product' => Feature::getFeatures($this->context->language->id),
 			'ad' => dirname($_SERVER['PHP_SELF']),
 			'base_uri' => __PS_BASE_URI__,
 			'is_one_dot_three' => (substr(_PS_VERSION_, 0, 3) == '1.3'),
@@ -1508,13 +1523,16 @@ class Ebay extends Module
 	private function _postProcessTemplateManager()
 	{
 		$ebay_product_template = Tools::getValue('ebay_product_template');
+		$ebay_product_template_title = Tools::getValue('ebay_product_template_title');
+		if (empty($ebay_product_template_title))
+			$ebay_product_template_title = '{TITLE}';
 
 		// work around for the tinyMCE bug deleting the css line
 		$css_line = '<link rel="stylesheet" type="text/css" href="'.$this->_getModuleUrl().'views/css/ebay.css" />';
 		$ebay_product_template = $css_line.$ebay_product_template;
 
-			// Saving new configurations
-		if ($this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $ebay_product_template, true))
+		// Saving new configurations
+		if ($this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $ebay_product_template, true) && $this->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', $ebay_product_template_title))
 			$this->html .= $this->displayConfirmation($this->l('Settings updated'));
 		else
 			$this->html .= $this->displayError($this->l('Settings failed'));
@@ -2079,5 +2097,44 @@ class Ebay extends Module
 	{
 		return $this->context;
 	}
-}
 
+	public function ajaxPreviewTemplate($content, $id_lang)
+	{
+		// work around for the tinyMCE bug deleting the css line
+		$css_line = '<link rel="stylesheet" type="text/css" href="'.$this->_getModuleUrl().'views/css/ebay.css" />';
+		$content = $css_line.$content;
+
+		// random product
+		$category = Category::getRootCategory($id_lang);
+		$product = $category->getProducts($id_lang, 0, 1, null, null, false, true, true, 1, false);
+		$product = $product[0];
+
+		// data
+		$data = array(
+			'price' => $product['price'],
+			'price_without_reduction' => '',
+			'reduction' => $product['reduction'],
+			'name' => $product['name'],
+			'description' => $product['description'],
+			'description_short' => $product['description_short']
+			);
+		if ($data['reduction'] > 0)
+			$data['price_without_reduction'] = $product['price_without_reduction'];
+
+		// pictures product
+		$product = new Product($product['id_product'], false, $id_lang);
+		$pictures = EbaySynchronizer::_getPictures($product, $id_lang, $this->context, array());
+		$data['large_pictures'] = $pictures['large'];
+		$data['medium_pictures'] = $pictures['medium'];
+
+		// features product
+		$features_html = '';
+		foreach ($product->getFrontFeatures($id_lang) as $feature)
+			$features_html .= '<b>'.$feature['name'].'</b> : '.$feature['value'].'<br/>';
+		$data['features'] = $features_html;
+
+		$content = EbaySynchronizer::fillAllTemplate($data, $content);
+
+		echo $content;
+	}
+}
