@@ -208,6 +208,7 @@ class Ebay extends Module
 
 		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', ''); // fix to work around the PrestaShop bug when saving html for a configuration key that doesn't exist yet
 		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $this->_getProductTemplateContent(), true);
+		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', '{TITLE}');
 		$this->setConfiguration('EBAY_ORDER_LAST_UPDATE', date('Y-m-d\TH:i:s.000\Z'));
 		$this->setConfiguration('EBAY_INSTALL_DATE', date('Y-m-d\TH:i:s.000\Z'));
 		$this->setConfiguration('EBAY_DELIVERY_TIME', 2);
@@ -1492,6 +1493,8 @@ class Ebay extends Module
 		$smarty_vars = array(
 			'action_url' => $action_url,
 			'ebay_product_template' => $ebay_product_template,
+			'ebay_product_template_title' => Configuration::get('EBAY_PRODUCT_TEMPLATE_TITLE'),
+			'features_product' => Feature::getFeatures($this->context->language->id),
 			'ad' => dirname($_SERVER['PHP_SELF']),
 			'base_uri' => __PS_BASE_URI__,
 			'is_one_dot_three' => (substr(_PS_VERSION_, 0, 3) == '1.3'),
@@ -1520,13 +1523,16 @@ class Ebay extends Module
 	private function _postProcessTemplateManager()
 	{
 		$ebay_product_template = Tools::getValue('ebay_product_template');
+		$ebay_product_template_title = Tools::getValue('ebay_product_template_title');
+		if (empty($ebay_product_template_title))
+			$ebay_product_template_title = '{TITLE}';
 
 		// work around for the tinyMCE bug deleting the css line
 		$css_line = '<link rel="stylesheet" type="text/css" href="'.$this->_getModuleUrl().'views/css/ebay.css" />';
 		$ebay_product_template = $css_line.$ebay_product_template;
 
-			// Saving new configurations
-		if ($this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $ebay_product_template, true))
+		// Saving new configurations
+		if ($this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $ebay_product_template, true) && $this->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', $ebay_product_template_title))
 			$this->html .= $this->displayConfirmation($this->l('Settings updated'));
 		else
 			$this->html .= $this->displayError($this->l('Settings failed'));
@@ -2091,5 +2097,44 @@ class Ebay extends Module
 	{
 		return $this->context;
 	}
-}
 
+	public function ajaxPreviewTemplate($content, $id_lang)
+	{
+		// work around for the tinyMCE bug deleting the css line
+		$css_line = '<link rel="stylesheet" type="text/css" href="'.$this->_getModuleUrl().'views/css/ebay.css" />';
+		$content = $css_line.$content;
+
+		// random product
+		$category = Category::getRootCategory($id_lang);
+		$product = $category->getProducts($id_lang, 0, 1, null, null, false, true, true, 1, false);
+		$product = $product[0];
+
+		// data
+		$data = array(
+			'price' => $product['price'],
+			'price_without_reduction' => '',
+			'reduction' => $product['reduction'],
+			'name' => $product['name'],
+			'description' => $product['description'],
+			'description_short' => $product['description_short']
+			);
+		if ($data['reduction'] > 0)
+			$data['price_without_reduction'] = $product['price_without_reduction'];
+
+		// pictures product
+		$product = new Product($product['id_product'], false, $id_lang);
+		$pictures = EbaySynchronizer::_getPictures($product, $id_lang, $this->context, array());
+		$data['large_pictures'] = $pictures['large'];
+		$data['medium_pictures'] = $pictures['medium'];
+
+		// features product
+		$features_html = '';
+		foreach ($product->getFrontFeatures($id_lang) as $feature)
+			$features_html .= '<b>'.$feature['name'].'</b> : '.$feature['value'].'<br/>';
+		$data['features'] = $features_html;
+
+		$content = EbaySynchronizer::fillAllTemplate($data, $content);
+
+		echo $content;
+	}
+}

@@ -6,6 +6,7 @@
             <description><![CDATA[Exportez facilement vos produits de PrestaShop vers eBay.]]></description>
             <author><![CDATA[PrestaShop]]></author>
             <tab><![CDATA[market_place]]></tab>
+	<confirmUninstall>Êtes vous sûr de vouloir désinstaller le module ? Toutes les configurations seront supprimées</confirmUninstall>
             <is_configurable>1</is_configurable>
             <need_instance>1</need_instance>
 	<limited_countries></limited_countries>
