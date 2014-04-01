@@ -215,7 +215,7 @@ class EbayCategory
 
 		foreach ($categories as $category)
 		{
-			if (version_compare(_PS_VERSION_, '1.4', '<='))
+			if (version_compare(_PS_VERSION_, '1.5', '<'))
 			{
 				$db->autoExecuteWithNullValues(_DB_PREFIX_.'ebay_category', array(
 					'id_category_ref' => pSQL($category['CategoryID']),
