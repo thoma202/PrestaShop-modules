@@ -138,7 +138,7 @@ $_MODULE['<{ebay}prestashop>formitemsspecifics_98f770b0af18ca763421bac22b4b6805'
 $_MODULE['<{ebay}prestashop>formitemsspecifics_cf3084f540215d39b4c5083c1dbd35d4'] = 'Specifications eBay';
 $_MODULE['<{ebay}prestashop>formitemsspecifics_1be6f9eb563f3bf85c78b4219bf09de9'] = 'Marque';
 $_MODULE['<{ebay}prestashop>formparameters_459a6f79ad9b13cbcb5f692d2cc7a94d'] = 'Jeton d\'authentification';
-$_MODULE['<{ebay}prestashop>formparameters_20df664c801b8aacb49f07c2c39f1291'] = 'Regénerer votre jeton d\'authentification';
+$_MODULE['<{ebay}prestashop>formparameters_20df664c801b8aacb49f07c2c39f1291'] = 'Regénerer votre jeton d authentification';
 $_MODULE['<{ebay}prestashop>formparameters_6408d076fa6417e7bc8ddc3cdf9a0644'] = 'Configuration globale';
 $_MODULE['<{ebay}prestashop>formparameters_f0507f3e10d3fa69781a98cbe7d80bf0'] = 'Afin de mettre vos produits sur eBay il vous faut d\'abord créer un compte professionnel sur eBay et configuré le module PrestaShop-eBay';
 $_MODULE['<{ebay}prestashop>formparameters_230b8b5e65ef7731d72a42b1ddb0293f'] = 'Identifiant eBay';
