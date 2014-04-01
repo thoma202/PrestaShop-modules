@@ -878,6 +878,7 @@ class Ebay extends Module
 
 		$ebay = new EbayRequest();
 		$ebay_sign_in_url = $ebay->getLoginUrl().'?SignIn&runame='.$ebay->runame.'&SessID='.$this->context->cookie->eBaySession;
+		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
 
 		$smarty_vars = array(
 			'url' => $url,
@@ -896,7 +897,8 @@ class Ebay extends Module
 			'ebay_paypal_email' => Tools::safeOutput(Tools::getValue('ebay_paypal_email', Configuration::get('EBAY_PAYPAL_EMAIL'))),
 			'returnsConditionAccepted' => Tools::getValue('ebay_returns_accepted_option', Configuration::get('EBAY_RETURNS_ACCEPTED_OPTION')),
 			'ebayListingDuration' => Configuration::get('EBAY_LISTING_DURATION'),
-			'automaticallyRelist' => Configuration::get('EBAY_AUTOMATICALLY_RELIST')
+			'automaticallyRelist' => Configuration::get('EBAY_AUTOMATICALLY_RELIST'),
+			'hasEbayBoutique' => isset($user_profile['StoreUrl']) && !empty($user_profile['StoreUrl']) ? true : false
 		);
 
 		if (Tools::getValue('relogin'))
