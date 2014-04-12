@@ -31,7 +31,7 @@ if (!in_array('Ebay', get_declared_classes()))
 class EbayCountrySpec
 {
 	public $country;
-	public $accepted_isos = array('it', 'gb', 'es', 'fr', 'nl', 'pl', 'be');
+	public $accepted_isos = array('it', 'gb', 'es', 'fr', 'nl', 'pl', 'be', 'de');
 	protected $ebay_iso;
 
 	private $dev;
@@ -135,6 +135,18 @@ class EbayCountrySpec
 			'iso_code'       => 'be',
 			'signin'         => 'https://signin.benl.ebay.be/ws/eBayISAPI.dll',
 			'signin_sandbox' => 'https://signin.sandbox.benl.ebay.be/ws/eBayISAPI.dll'
+		),
+		'de' => array(
+			'site_id'        => 77,
+			'documentation'  => 'de',
+			'language'       => 'de_DE',
+			'currency'       => 'EUR',
+			'site_name'      => 'Germany',
+			'site_extension' => 'de',
+			'img_stats'      => null,
+			'iso_code'       => 'de',
+			'signin'         => 'https://signin.ebay.de/ws/eBayISAPI.dll',
+			'signin_sandbox' => 'https://signin.sandbox.ebay.de/ws/eBayISAPI.dll'
 		)
 	);
 
@@ -240,7 +252,8 @@ class EbayCountrySpec
 	**/
 	private function _getCountry()
 	{
-		$ebayCountry = self::getInstanceByKey(Configuration::get('EBAY_COUNTRY_DEFAULT'));
+		$ebay_profile = EbayProfile::getCurrent();		
+		$ebayCountry = self::getInstanceByKey($ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT'));
 
 		$this->country = $ebayCountry->country;
 
