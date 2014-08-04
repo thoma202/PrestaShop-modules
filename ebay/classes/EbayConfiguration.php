@@ -47,7 +47,8 @@ class EbayConfiguration
 
 		if ($token = $request->fetchToken(Configuration::get('EBAY_API_USERNAME', null, 0, 0), Configuration::get('EBAY_API_SESSION', null, 0, 0)))
 		{
-			Configuration::updateValue('EBAY_API_TOKEN', $token, false, 0, 0);
+            $ebay_profile->setToken($token);
+			//Configuration::updateValue('EBAY_API_TOKEN', $token, false, 0, 0);
 			Configuration::updateValue('EBAY_TOKEN_REGENERATE', false, false, 0, 0);
 
 			return true;

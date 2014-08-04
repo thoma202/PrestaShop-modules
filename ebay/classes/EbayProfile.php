@@ -36,6 +36,8 @@ class EbayProfile extends ObjectModel
 	private $returns_policy;
 	
 	private $configurations;
+    
+    private $token;
 	
 	/**
 	 * @see ObjectModel::$definition
@@ -220,6 +222,41 @@ class EbayProfile extends ObjectModel
 		
 		return $final_carriers;
 	}
+    
+	/**
+	  * Get token from the ebay_user_identifier
+	  *
+	  * @return token, null if no token
+	  */
+    public function getToken() 
+    {
+        if ($this->token === null) 
+        {
+    		$sql = 'SELECT `token`
+    			FROM `'._DB_PREFIX_.'ebay_user_identifier_token` euit
+    			WHERE euit.`ebay_user_identifier` = \''.pSQL($this->ebay_user_identifier).'\'';
+            $this->token = Db::getInstance()->getValue($sql);
+        }
+        
+        return $this->token;
+    }
+    
+	/**
+	  * Set token for this ebay_user_identifier
+	  *
+	  * @return null
+	  */
+    public function setToken($token)
+    {
+		$sql = 'REPLACE INTO `'._DB_PREFIX_.'ebay_user_identifier_token` (
+            `ebay_user_identifier`, 
+            `token`
+            )
+			VALUES(
+			\''.pSQL($this->ebay_user_identifier).'\',
+			\''.pSQL($token).'\')';
+		DB::getInstance()->Execute($sql);        
+    }    
 	
 	/**
 	  * Is the profile configured

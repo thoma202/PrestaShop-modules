@@ -736,7 +736,7 @@ class EbayRequest
 	private function _makeRequest($api_call, $vars, $shoppingEndPoint = false)
 	{
 		$vars = array_merge($vars, array(
-			'ebay_auth_token' => Configuration::get('EBAY_API_TOKEN', null, 0, 0),
+			'ebay_auth_token' => $this->ebay_profile->getToken(),
 			'error_language' => $this->ebay_country->getLanguage(),
 		));
 

@@ -95,7 +95,7 @@ class Ebay extends Module
 	{
 		$this->name = 'ebay';
 		$this->tab = 'market_place';
-		$this->version = '1.7.1';
+		$this->version = '1.8';
 		$this->stats_version = '1.0';
 
 		$this->author = 'PrestaShop';
@@ -183,7 +183,7 @@ class Ebay extends Module
 
 
 			// Generate warnings
-			if (!Configuration::get('EBAY_API_TOKEN', null, 0, 0))
+			if (!$this->ebay_profile->getToken())
 				$this->warning = $this->l('You must register your module on eBay.');
 
 
@@ -455,8 +455,6 @@ class Ebay extends Module
 			if (!Db::getInstance()->execute($s))
 				return false;
 
-		Configuration::deleteByName('EBAY_API_TOKEN');
-
 		// Uninstall Module
 		if (!parent::uninstall()
 			|| !$this->unregisterHook('addProduct')
@@ -517,6 +515,14 @@ class Ebay extends Module
 				upgrade_module_1_7($this);
 			}
 		}
+        
+		if (version_compare($version, '1.8', '<')) {
+			if (version_compare(_PS_VERSION_, '1.5', '<'))
+			{
+				include_once(dirname(__FILE__).'/upgrade/Upgrade-1.8.php');
+				upgrade_module_1_8($this);
+			}
+		}        
 	}
 
 	/**
@@ -1150,7 +1156,7 @@ class Ebay extends Module
 		
 		if (Configuration::get('EBAY_SEND_STATS') === false)
 			$template = $this->_displayFormStats();
-		elseif (!Configuration::get('EBAY_API_TOKEN', null, 0, 0))
+        elseif (!$this->ebay_profile->getToken())
 			$template = $this->_displayFormRegister();
 		elseif($is_all_shops) 
 			$template = $this->_displayMultishopsList();
@@ -1400,7 +1406,6 @@ class Ebay extends Module
 		$picture_per_listing = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_PER_LISTING');
 		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
 
-
 		$smarty_vars = array(
 			'url' => $url,
 			'ebay_sign_in_url' => $ebay_sign_in_url,
@@ -1444,7 +1449,9 @@ class Ebay extends Module
 			'activate_mails' => Configuration::get('EBAY_ACTIVATE_MAILS'),
 			'picture_per_listing' => $picture_per_listing,
 			'hasEbayBoutique' => isset($user_profile['StoreUrl']) && !empty($user_profile['StoreUrl']) ? true : false,
-			'stats' => Configuration::get('EBAY_SEND_STATS')
+			'stats' => Configuration::get('EBAY_SEND_STATS'),
+            'currencies' => Currency::getCurrenciesByIdShop($this->ebay_profile->id_shop),
+            'current_currency' => (int)$this->ebay_profile->getConfiguration('EBAY_CURRENCY')
 		);
 
 		if (Tools::getValue('relogin'))
@@ -1507,6 +1514,10 @@ class Ebay extends Module
 		$picture_per_listing = (int)Tools::getValue('picture_per_listing');
 		if ($picture_per_listing < 0)
 			$picture_per_listing = 0;
+        
+        // we retrieve the potential currencies to make sure the pick currency exists in this shop
+        $currencies = Currency::getCurrenciesByIdShop($this->ebay_profile->id_shop);
+        $currencies_ids = array_map(function($a) { return $a['id_currency']; }, $currencies);
 
 		if ($this->ebay_profile->setConfiguration('EBAY_PAYPAL_EMAIL', pSQL(Tools::getValue('ebay_paypal_email')))
 //			&& ($this->ebay_profile->ebay_user_identifier = pSQL(Tools::getValue('ebay_identifier')))
@@ -1530,6 +1541,8 @@ class Ebay extends Module
 			&& $this->setConfiguration('EBAY_ACTIVATE_LOGS', Tools::getValue('activate_logs') ? 1 : 0)
 			&& $this->setConfiguration('EBAY_ACTIVATE_MAILS', Tools::getValue('activate_mails') ? 1 : 0)
 			&& $this->ebay_profile->setConfiguration('EBAY_PICTURE_PER_LISTING', $picture_per_listing)
+            && in_array((int)Tools::getValue('currency'), $currencies_ids)
+            && $this->ebay_profile->setConfiguration('EBAY_CURRENCY', (int)Tools::getValue('currency'))
 		){
 			if(Tools::getValue('activate_logs') == 0)
 				if(file_exists(dirname(__FILE__).'/log/request.txt'))
@@ -2512,7 +2525,7 @@ class Ebay extends Module
 	{
 		$alerts = array();
 
-		if (!Configuration::get('EBAY_API_TOKEN', null, 0, 0))
+		if (!$this->ebay_profile->getToken())
 			$alerts[] = 'registration';
 
 		if (!ini_get('allow_url_fopen'))

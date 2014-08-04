@@ -1,5 +1,4 @@
 <?php
-
 /*
  * 2007-2014 PrestaShop
  *
@@ -21,11 +20,22 @@
  *
  *  @author PrestaShop SA <contact@prestashop.com>
  *  @copyright  2007-2014 PrestaShop SA
- *  @license	http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
+ *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  *  International Registered Trademark & Property of PrestaShop SA
  */
 
-// Init
-$sql = array();
+function upgrade_module_1_8($module)
+{
+	include(dirname(__FILE__).'/sql/sql-upgrade-1-8.php');
 
-$sql[] = 'TRUNCATE TABLE `'._DB_PREFIX_.'ebay_user_identifier_token`';
+	if (!empty($sql) && is_array($sql))
+	{
+		foreach ($sql as $request)
+			if (!Db::getInstance()->execute($request))
+			{
+				$this->_errors[] = DB::getInstance()->getMsgError();
+				return false;
+			}
+	}
+	return true;
+}

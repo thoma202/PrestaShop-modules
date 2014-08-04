@@ -204,6 +204,25 @@
 		<div style="clear:both;"></div>
 
 	</fieldset>
+    
+	<fieldset style="margin-top:10px;">
+		<legend><span>{l s='Currency' mod='ebay'}</span></legend>
+
+		<label>
+			{l s='Currency' mod='ebay'}
+		</label>
+		<div class="margin-form">
+			<select name="currency" data-inlinehelp="{l s='This currency will be used for your products sold on eBay' mod='ebay'}" class="ebay_select">
+				{if isset($currencies) && $currencies && sizeof($currencies)}
+					{foreach from=$currencies item='currency'}
+						<option value="{$currency.id_currency}"{if $currency.id_currency == $current_currency} selected{/if}>{$currency.name}</option>
+					{/foreach}
+				{/if}
+			</select>
+		</div>
+		<div class="clear both"></div>
+
+	</fieldset>    
 
 	<fieldset style="margin-top:10px;">
 		<legend>{l s='Others' mod='ebay'}</legend>
