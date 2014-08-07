@@ -66,6 +66,9 @@ $(document).ready( function() {
 	$('.color_pick').click(function () {
 		displayExpressCheckoutShortcut();
 	});
+
+	if($('body#product').length > 0)
+		displayExpressCheckoutShortcut();
 	
 	{/literal}
 	{if isset($paypal_authorization)}
