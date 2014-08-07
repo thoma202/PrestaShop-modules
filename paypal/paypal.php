@@ -428,7 +428,7 @@ class PayPal extends PaymentModule
 			case 'id':
 				return 'id-id';
 			case 'il':
-				return 'it-il';
+				return 'it-it';
 			case 'jp':
 				return 'ja-jp';
 			case 'no':
