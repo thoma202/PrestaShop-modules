@@ -156,6 +156,9 @@ class Ebay extends Module
 			if (Configuration::get('EBAY_VERSION') != $this->version)
 				$this->_upgrade();
 
+		    if (!empty($_POST) && Tools::getValue('ebay_profile'))
+                $this->_postProcessConfig();
+
 			if(class_exists('EbayCountrySpec'))
 			{
 				if ($id_ebay_profile)
@@ -1070,7 +1073,6 @@ class Ebay extends Module
 				return $this->html.$this->displayError($this->l('You must enable allow_url_fopen option on your server if you want to use this module.'));
 		}
 
-
 		// If isset Post Var, post process else display form
 		if (!empty($_POST) && (Tools::isSubmit('submitSave') || Tools::isSubmit('btnSubmitSyncAndPublish') || Tools::isSubmit('btnSubmitSync')))
 		{
@@ -1244,12 +1246,18 @@ class Ebay extends Module
 
 		if ($logged)
 		{
-			if ($ebay_username = Tools::getValue('eBayUsername'))
+			if ($ebay_username = Tools::getValue('eBayUsernamesList'))
 			{
+                if ($ebay_username == -1)
+                    $ebay_username = Tools::getValue('eBayUsername');
+
 				$this->context->cookie->eBayUsername = $ebay_username;
 				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
-//				$this->setConfiguration('EBAY_IDENTIFIER', $ebay_username);
 				$this->ebay_profile->ebay_user_identifier = $ebay_username;
+                $this->ebay_profile->id_lang = Tools::getValue('ebay_language');
+
+                $ebay_country_spec = EbayCountrySpec::getInstanceByKey(Tools::getValue('ebay_country'));
+                $this->ebay_profile->ebay_site_id = $ebay_country_spec->getSiteID();
 				$this->ebay_profile->save();
 				$this->ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', Tools::getValue('ebay_country'));
 			}
@@ -1271,7 +1279,9 @@ class Ebay extends Module
 				'ebay_username' => $this->context->cookie->eBayUsername,
 				'window_open_url' => '?SignIn&runame='.$ebay->runame.'&SessID='.$this->context->cookie->eBaySession,
 				'ebay_countries' => EbayCountrySpec::getCountries($ebay->getDev()),
-				'default_country' => EbayCountrySpec::getKeyForEbayCountry()
+				'default_country' => EbayCountrySpec::getKeyForEbayCountry(),
+                'ebay_user_identifiers' => EbayProfile::getEbayUserIdentifiers(),
+                'languages' => Language::getLanguages(true, $this->ebay_profile->id_shop) 
 			));
 
 		}
@@ -1346,6 +1356,12 @@ class Ebay extends Module
 	 **/
 	private function _displayFormConfig()
 	{
+        // profiles data
+        $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
+        $profiles = EbayProfile::getProfilesByIdShop($id_shop);
+        foreach($profiles as &$profile)
+            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);
+        
 		$smarty_vars = array(
 			'class_general' => version_compare(_PS_VERSION_, '1.5', '>') ? 'uncinq' : 'unquatre',
 			'form_parameters' => $this->_displayFormParameters(),
@@ -1357,7 +1373,9 @@ class Ebay extends Module
 			'orders_history' => $this->_displayOrdersHistory(),
 			'help' => $this->_displayHelp(),
 			'id_tab' => Tools::safeOutput(Tools::getValue('id_tab')),
-			'ebay_listings' => $this->_displayEbayListings()
+			'ebay_listings' => $this->_displayEbayListings(),
+            'id_ebay_profile' => $this->ebay_profile->id,
+            'profiles' => $profiles
 		);
 
 		$this->smarty->assign($smarty_vars);
@@ -1497,6 +1515,13 @@ class Ebay extends Module
 			'Days_30' => $this->l('30 Days'),
 			'GTC' => $this->l('Good \'Till Canceled')
 		);
+	}
+
+	private function _postProcessConfig()
+	{
+        if ($id_ebay_profile = (int)Tools::getValue('ebay_profile'))
+            if (!EbayProfile::setProfile($id_ebay_profile))
+                $this->html .= $this->displayError($this->l('Profile cannot be changed'));   
 	}
 
 	private function _postProcessStats()

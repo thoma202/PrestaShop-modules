@@ -286,18 +286,74 @@ class EbayProfile extends ObjectModel
 			return false;
 		}
 	}
-	
-	public static function getCurrent()
-	{
+    
+    public static function _getIdShop() {
 		$id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
 		if (!$id_shop)
 			if(Configuration::get('PS_SHOP_DEFAULT'))
 				$id_shop = Configuration::get('PS_SHOP_DEFAULT');
 			else
 				$id_shop = 1;
+        return $id_shop;
+    }
+	
+	/**
+	  * Is the shop has changed, returns the first profile of the shop, returns the current profile otherwise
+	  *
+	  * @return EbayProfile
+	  */    
+	public static function getCurrent()
+	{
+        $id_shop = EbayProfile::_getIdShop();
+            
+        $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
+        if ($current_profile) {
+            $data = explode('_',$current_profile);
+            $current_profile_id_shop = (int)$data[1];
+            if ($current_profile_id_shop == $id_shop)
+                return new EbayProfile((int)$data[0]);            
+        }
 
-		return self::getOneByIdShop($id_shop);
-		
-
+        // if shop has changed we switch to the first shop profile
+        $ebay_profile = self::getOneByIdShop($id_shop);
+        Configuration::updateValue('EBAY_CURRENT_PROFILE', $ebay_profile->id.'_'.$id_shop, false, 0, 0);
+		return $ebay_profile;
 	}
+    
+    public static function setProfile($id_ebay_profile) {
+        $id_shop = EbayProfile::_getIdShop();
+        
+        // check that this profile is for the current shop
+        $shop_profiles = EbayProfile::getProfilesByIdShop($id_shop);
+        $is_shop_profile = false;
+        foreach ($shop_profiles as $profile) {
+            if ($profile['id_ebay_profile'] == $id_ebay_profile) {
+                $is_shop_profile = true;
+                break;
+            }
+        }
+        
+        if (!$is_shop_profile)
+            return false;
+        
+        Configuration::updateValue('EBAY_CURRENT_PROFILE', $id_ebay_profile.'_'.$id_shop, false, 0, 0);
+        return true;
+    }
+    
+	public static function getProfilesByIdShop($id_shop = 0)
+	{
+		$sql = 'SELECT ep.`id_ebay_profile`, ep.`ebay_user_identifier`, ep.`ebay_site_id`, s.`name`, ep.`id_lang`, l.`name` AS `language_name`
+				FROM `'._DB_PREFIX_.'ebay_profile` ep
+                LEFT JOIN `'._DB_PREFIX_.'lang` l ON (ep.`id_lang` = l.`id_lang`)
+                LEFT JOIN `'._DB_PREFIX_.'shop` s ON (ep.`id_shop` = s.`id_shop`)
+				'.($id_shop != 0 ? ' WHERE ep.`id_shop` = '.(int)$id_shop : '');
+		return Db::getInstance()->executeS($sql);
+	}
+    
+    public static function getEbayUserIdentifiers() {
+        $sql = 'SELECT DISTINCT(`ebay_user_identifier`)
+            FROM `'._DB_PREFIX_.'ebay_profile` ep';
+        return Db::getInstance()->executeS($sql);
+    }
+    
 }
