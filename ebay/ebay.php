@@ -1123,6 +1123,8 @@ class Ebay extends Module
 		$prestashop_content = @Tools::file_get_contents($url, false, $stream_context);
 		if (!Validate::isCleanHtml($prestashop_content))
 			$prestashop_content = '';
+        
+        $ebay_send_stats = Configuration::get('EBAY_SEND_STATS');
 
 		$this->smarty->assign(array(
 			'img_stats' => $this->ebay_country->getImgStats(),
@@ -1148,6 +1150,8 @@ class Ebay extends Module
 			'shippingValidator' => EbayValidatorTab::getShippingTabConfiguration($this->ebay_profile->id),
 			'synchronisationValidator' => EbayValidatorTab::getSynchronisationTabConfiguration($this->ebay_profile->id),
 			'templateValidator' => EbayValidatorTab::getTemplateTabConfiguration($this->ebay_profile->id),
+            'show_welcome' => ( ($ebay_send_stats !== false) && !$this->ebay_profile->getToken()),
+            'show_seller_tips' => ( ($ebay_send_stats !== false) && $this->ebay_profile->getToken() )
 		));
 		
 		// test if multishop Screen and all shops
@@ -1156,7 +1160,7 @@ class Ebay extends Module
 		else
 			$is_all_shops = false;
 		
-		if (Configuration::get('EBAY_SEND_STATS') === false)
+		if ($ebay_send_stats === false)
 			$template = $this->_displayFormStats();
         elseif (!$this->ebay_profile->getToken())
 			$template = $this->_displayFormRegister();
@@ -1252,7 +1256,7 @@ class Ebay extends Module
                     $ebay_username = Tools::getValue('eBayUsername');
 
 				$this->context->cookie->eBayUsername = $ebay_username;
-				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
+//				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
 				$this->ebay_profile->ebay_user_identifier = $ebay_username;
                 $this->ebay_profile->id_lang = Tools::getValue('ebay_language');
 
@@ -1359,8 +1363,11 @@ class Ebay extends Module
         // profiles data
         $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
         $profiles = EbayProfile::getProfilesByIdShop($id_shop);
-        foreach($profiles as &$profile)
-            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);
+        $id_ebay_profiles = array();
+        foreach($profiles as &$profile) {
+            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);            
+            $id_ebay_profiles[] = $profile['id_ebay_profile'];
+        }
         
 		$smarty_vars = array(
 			'class_general' => version_compare(_PS_VERSION_, '1.5', '>') ? 'uncinq' : 'unquatre',
@@ -1375,7 +1382,8 @@ class Ebay extends Module
 			'id_tab' => Tools::safeOutput(Tools::getValue('id_tab')),
 			'ebay_listings' => $this->_displayEbayListings(),
             'id_ebay_profile' => $this->ebay_profile->id,
-            'profiles' => $profiles
+            'profiles' => $profiles,
+            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles)
 		);
 
 		$this->smarty->assign($smarty_vars);
@@ -1386,7 +1394,7 @@ class Ebay extends Module
 	private function _displayFormParameters()
 	{
 		// Loading config currency
-		$config_currency = new Currency((int)Configuration::get('PS_CURRENCY_DEFAULT'));
+		$config_currency = new Currency((int)$this->ebay_profile->getConfiguration('EBAY_CURRENCY'));
 
 		$url_vars = array(
 			'id_tab' => '1',
@@ -1422,7 +1430,8 @@ class Ebay extends Module
 		$sizeBig = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG');
 		$sizesmall = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_SMALL');
 		$picture_per_listing = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_PER_LISTING');
-		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
+//		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
+		$user_profile = $ebay->getUserProfile($this->ebay_profile->ebay_user_identifier);
 
 		$smarty_vars = array(
 			'url' => $url,
@@ -1540,7 +1549,7 @@ class Ebay extends Module
 		if ($picture_per_listing < 0)
 			$picture_per_listing = 0;
         
-        // we retrieve the potential currencies to make sure the pick currency exists in this shop
+        // we retrieve the potential currencies to make sure the selected currency exists in this shop
         $currencies = Currency::getCurrenciesByIdShop($this->ebay_profile->id_shop);
         $currencies_ids = array_map(function($a) { return $a['id_currency']; }, $currencies);
 
@@ -2560,7 +2569,8 @@ class Ebay extends Module
 			$alerts[] = 'curl';
 
 		$ebay = new EbayRequest();
-		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME', null, 0, 0));
+		//$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME', null, 0, 0));
+        $user_profile = $ebay->getUserProfile($this->ebay_profile->ebay_user_identifier);
 
 		$this->StoreName = $user_profile['StoreName'];
 

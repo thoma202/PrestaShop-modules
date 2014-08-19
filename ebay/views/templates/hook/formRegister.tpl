@@ -32,48 +32,7 @@
 	</script>
 {/if}
 
-<div class="ebay-welcome">
-    <img id="ebay-logo" src="{$path}views/img/ebay.png" />
-    <div id="ebay-welcome-top" class="ebay-boxes-2-col-table">
-        <div class="ebay-boxes-2-col-cell right">
-            <div class="ebay-boxes-2-col-cell-content">
-                <div id="ebay-welcome-left-content">
-                    <p class="title ebay-title">A PERFECT PARTNER FOR YOUR BUSINESS</p>
-                    <p>eBay is one of the <b>largest marketplaces in the world that connects buyers and sellers of all sizes around the world</b>.</p>
-
-                    <p>eBay represents a great opportunity for you to reach millions of new customers and help you to  grow your business.</p>
-
-                    <p><b>With the eBay add-on for PrestaShop you can:</b></p>
-                    <ul class="ebay-bullet-points">
-                        <li>Export your products from your PrestaShop shop to eBay.</li>
-                        <li>Manage both channels from your back-office.</li>
-                        <li>Develop a profitable additional sales channel.</li>
-                    </ul>
-                    <p><b>Start selling now with the PrestaShop FREE add-on for eBay!</b></p>
-                </div>
-            </div>
-        </div>
-        <div id="ebay-welcome-right" class="ebay-boxes-2-col-cell">
-            <div class="ebay-boxes-2-col-cell-content right">
-                <div class="ebay-light-gray-box">
-                    <div class="ebay-light-gray-box-content-outer">
-                        <div class="ebay-light-gray-box-content">
-                            <p class="ebay-light-gray-box-title">Start selling on eBay with PrestaShop is easy:</p>
-                            <ul class="ebay-light-gray-box-ul">
-                                <li><span class="ebay-light-gray-box-number">1</span> Create an eBay business account</li>
-                                <li><span class="ebay-light-gray-box-number">2</span> Open your eBay shop</li>
-                                <li><span class="ebay-light-gray-box-number">3</span> Link your eBay account to the eBay add-on</li>
-                                <li><span class="ebay-light-gray-box-number">4</span> Configure the eBay add-on</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="clear:both"></div>
-    </div>
-</div>
-
+<!--
 <div class="ebay-boxes-2-col-table">
     <div class="ebay-boxes-2-col-cell">
         <div class="ebay-boxes-2-col-cell-content left">
@@ -103,43 +62,7 @@
         </div>
     </div>
 </div>
-
-<!-- seller tips -->
-<div class="ebay-welcome">
-    <div id="ebay-tips" class="ebay-boxes-2-col-table">
-        <div class="ebay-boxes-2-col-cell right">
-            <div class="ebay-boxes-2-col-cell-content">
-                <div id="ebay-welcome-left-content" style="padding-bottom: 3em">
-                    <img src="{$path}views/img/ebay.png" />                    
-                    <p class="title ebay-title">A PERFECT PARTNER FOR YOUR BUSINESS</p>
-                    <p>eBay is one of the <b>largest marketplaces in the world that connects buyers and sellers of all sizes around the world</b>.</p>
-
-                    <p>eBay represents a great opportunity for you to reach millions of new customers and help you to  grow your business.</p>
-                </div>
-            </div>
-        </div>
-        <div id="ebay-welcome-right" class="ebay-boxes-2-col-cell">
-            <div class="ebay-boxes-2-col-cell-content right">
-                <div class="ebay-light-gray-box">
-                    <div class="ebay-light-gray-box-content-outer">
-                        <div class="ebay-light-gray-box-content">
-                            <p class="ebay-light-gray-box-title">Tips to sell more on eBay:</p>
-                            <ul class="ebay-light-gray-box-ul">
-                                <li><span class="ebay-light-gray-box-number">1</span> <b>Help buyers to find your product:</b> Write good <a href="{l s='http://pages.ebay.co.uk/help/sell/title_desc_ov.html' mod='ebay'}" target="_blank">titles and descriptions</a></li>
-                                <li><span class="ebay-light-gray-box-number">2</span> <b>Make your products competitive:</b> <a href="{l s='http://sellercentre.ebay.co.uk/research-items-similar-yours' mod='ebay'}" target="_blank">research on eBay for similar products</a> to yours and compare with  your prices. 
-</li>
-                                <li><span class="ebay-light-gray-box-number">3</span> <b>Take special care of your product pictures,</b> <a href="{l s='http://sellercentre.ebay.co.uk/new-picture-standards' mod='ebay'}" target="_blank">this will help buyers to buy from you.</a></li>
-                                <li><span class="ebay-light-gray-box-number">4</span> <b>Make buyers to come back</b> by <a href="http://pages.ebay.co.uk/help/sell/top-rated.html" target="_blank">delivering a great service</a> and offering free shipping.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div style="clear:both"></div>
-    </div>
-</div>
-<!-- after seller tips -->
+-->
 
 <fieldset class="new">
 	<legend>{l s='Register the module on eBay' mod='ebay'}</legend>

@@ -737,3 +737,9 @@ a.ebay-primary {
 #eBayUsernameInput {
   margin: 0;
 }
+
+/* override PrestaShop css */
+
+.nobootstrap {
+  min-width: 0 !important;
+}

@@ -75,6 +75,20 @@ class EbayProduct
 			FROM `'._DB_PREFIX_.'ebay_product`
 			WHERE `id_ebay_profile` = '.(int)$id_ebay_profile);
 	}
+    
+	public static function getNbProductsByIdEbayProfile($id_ebay_profiles = array())
+	{
+        $query = 'SELECT `id_ebay_profile`, count(*) AS `nb`
+			FROM `'._DB_PREFIX_.'ebay_product`';
+        if ($id_ebay_profiles)
+            $query .= ' WHERE `id_ebay_profile` IN ('.implode(',', $id_ebay_profiles).')';
+        
+		$res = Db::getInstance()->executeS($query);
+        $ret = array();
+        foreach ($res as $row)
+            $ret[$row['id_ebay_profile']] = $row['nb'];
+        return $ret;
+	}    
 
 	public static function getProducts($not_update_for_days, $limit)
 	{

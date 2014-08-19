@@ -23,41 +23,6 @@
 *  International Registered Trademark & Property of PrestaShop SA
 *}
 
-<fieldset style="margin-top:10px;">
-	<legend>{l s='eBay Profiles' mod='ebay'}</legend>
-    
-    <table class="table tableDnD" cellpadding="0" cellspacing="0">
-		<thead>
-			<tr class="nodrag nodrop">
-                <th>Id</th>
-                <th>eBay User Id</th>
-                <th>eBay Site</th>
-                <th>Prestashop Shop</th>
-                <th>Language</th>
-            </tr>
-        </thead>
-        <tbody>
-			{foreach from=$profiles item=profile}            
-                {if $id_ebay_profile == $profile.id_ebay_profile}
-                    <tr style="font-weight:bold">
-                {else}
-                    <form id="ebay_profile_form_{$profile.id_ebay_profile}" method="post">
-                        <input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile}" />
-                    </form>
-                    <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer">
-                {/if}
-                    <td>{$profile.id_ebay_profile}</td>
-                    <td>{$profile.ebay_user_identifier}</td>
-                    <td>eBay {$profile.site_name}</td>
-                    <td>{$profile.name}</td>
-                    <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name}" title="{$profile.language_name}"></td>
-                </tr>
-            {/foreach}
-        </tbody>
-    </table>
-</fieldset>
-<div class="clear">&nbsp;</div>
-
 <ul id="menuTab">
 	<li id="menuTab1" class="menuTabButton selected {$parametersValidator.indicator}">1. {l s='Account settings' mod='ebay'}</li>
 	<li id="menuTab2" class="menuTabButton {$categoryValidator.indicator}">2. {l s='Categories and pricing' mod='ebay'}</li>
