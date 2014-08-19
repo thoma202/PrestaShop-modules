@@ -39,12 +39,12 @@
 </fieldset>
 <br />
 *}
-<link rel="stylesheet" href="{$css_file}" />
+<link rel="stylesheet" href="{$css_file|escape:'htmlall'}" />
 <script>
 	var $j = $;
 </script>
 {if substr($smarty.const._PS_VERSION_, 0, 3) == "1.4" || substr($smarty.const._PS_VERSION_, 0, 5) == "1.5.2"}
-	<link rel="stylesheet" href="{$fancyboxCss}" />
+	<link rel="stylesheet" href="{$fancyboxCss|escape:'htmlall'}" />
 	<script src="{$ebayjquery|escape:'htmlall'}"></script>
 	<script src="{$noConflicts|escape:'htmlall'}"></script>
 	<script>
@@ -64,7 +64,7 @@
 
 {if $show_welcome}
 <div class="ebay-welcome">
-    <img id="ebay-logo" src="{$path}views/img/ebay.png" />
+    <img id="ebay-logo" src="{$path|escape:'htmlall'}views/img/ebay.png" />
     <div id="ebay-welcome-top" class="ebay-boxes-2-col-table">
         <div class="ebay-boxes-2-col-cell right">
             <div class="ebay-boxes-2-col-cell-content">
@@ -155,11 +155,11 @@
                                         <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer">
                                     {/if}
                                         <td>{$profile.id_ebay_profile}</td>
-                                        <td>{$profile.ebay_user_identifier}</td>
-                                        <td>eBay {$profile.site_name}</td>
-                                        <td>{$profile.name}</td>
-                                        <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name}" title="{$profile.language_name}"></td>
-                                        <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]}{else}0{/if}</td>
+                                        <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
+                                        <td>eBay {$profile.site_name|escape:'htmlall'}</td>
+                                        <td>{$profile.name|escape:'htmlall'}</td>
+                                        <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
+                                        <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
                                         <td align="center"><img src="/img/admin/edit.gif" /></td>                    
                                     </tr>
                                 {/foreach}

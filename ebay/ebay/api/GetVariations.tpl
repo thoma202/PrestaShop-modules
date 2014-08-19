@@ -58,7 +58,7 @@
 			{/if}
 			<VariationSpecificPictureSet>
 				<VariationSpecificValue>{$picture.value}</VariationSpecificValue>
-				<PictureURL>{$picture.url}</PictureURL>
+				<PictureURL>http://davidfeldmanshow.com/wp-content/uploads/2014/01/dogs-wallpaper.jpg</PictureURL>
 			</VariationSpecificPictureSet>
 		{/foreach}
 	{/foreach}
