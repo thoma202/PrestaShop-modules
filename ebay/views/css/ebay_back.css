@@ -738,6 +738,17 @@ a.ebay-primary {
   margin: 0;
 }
 
+.ebay_gray_title_box {
+  color: #7f7f7f;
+  background-color: #f2f2f2;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: 1px solid #e0e0e0;
+  padding: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
 /* override PrestaShop css */
 
 .nobootstrap {

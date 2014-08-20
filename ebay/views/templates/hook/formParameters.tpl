@@ -27,7 +27,7 @@
 	{literal}
 	<script>
 		$(document).ready(function() {
-			win = window.redirect('{$redirect_url}');
+			win = window.redirect('{/literal}{$redirect_url}{literal}');
 		});
 	</script>
 	{/literal}

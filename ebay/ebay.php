@@ -156,15 +156,25 @@ class Ebay extends Module
 			if (Configuration::get('EBAY_VERSION') != $this->version)
 				$this->_upgrade();
 
-		    if (!empty($_POST) && Tools::getValue('ebay_profile'))
-                $this->_postProcessConfig();
+		    //if (!empty($_POST) && Tools::getValue('ebay_profile'))
+            if (!empty($_POST)) {
+                
+                 // called after adding a profile
+                if ((Tools::getValue('action') == 'logged') && Tools::getValue('eBayUsernamesList'))
+                    $this->_postProcessAddProfile();
+                elseif (Tools::getValue('ebay_profile'))
+                    $this->_postProcessConfig();
+            }
 
+            //print_r($this->ebay_profile);echo Configuration::get('EBAY_CURRENT_PROFILE');die;
 			if(class_exists('EbayCountrySpec'))
 			{
-				if ($id_ebay_profile)
-					$this->ebay_profile = new EbayProfile($id_ebay_profile);
-				else
-					$this->ebay_profile = EbayProfile::getCurrent();
+                if (!$this->ebay_profile) {
+    				if ($id_ebay_profile)
+    					$this->ebay_profile = new EbayProfile($id_ebay_profile);
+    				else
+    					$this->ebay_profile = EbayProfile::getCurrent();                    
+                }
 
 				if ($this->ebay_profile) 
 				{
@@ -320,17 +330,8 @@ class Ebay extends Module
 						
 			$profile->id_ebay_returns_policy_configuration = $returns_policy_configuration->id;
 			$profile->save();
-			
-			$profile->setConfiguration('EBAY_PRODUCT_TEMPLATE', ''); // fix to work around the PrestaShop bug when saving html for a configuration key that doesn't exist yet
-			$profile->setConfiguration('EBAY_PRODUCT_TEMPLATE', $this->_getProductTemplateContent(), true);
-			$profile->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', '{TITLE}');
-			$profile->setConfiguration('EBAY_ORDER_LAST_UPDATE', date('Y-m-d\TH:i:s.000\Z'));
-			$profile->setConfiguration('EBAY_DELIVERY_TIME', 2);
-			$profile->setConfiguration('EBAY_ACTIVATE_LOGS', '0');
-			$profile->setConfiguration('EBAY_ACTIVATE_MAILS', '0');
-			$profile->setConfiguration('EBAY_LISTING_DURATION', 'GTC');
-			$profile->setConfiguration('EBAY_AUTOMATICALLY_RELIST', 'on');
-			$profile->setConfiguration('EBAY_LAST_RELIST', date('Y-m-d'));
+            
+            $profile->setDefaultConfig($this->_getProductTemplateContent());
 		}		
 	}
 
@@ -1125,7 +1126,18 @@ class Ebay extends Module
 			$prestashop_content = '';
         
         $ebay_send_stats = Configuration::get('EBAY_SEND_STATS');
-
+        
+        // profiles data
+        $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
+        $profiles = EbayProfile::getProfilesByIdShop($id_shop);
+        $id_ebay_profiles = array();
+        foreach($profiles as &$profile) {
+            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);            
+            $id_ebay_profiles[] = $profile['id_ebay_profile'];
+        }
+        
+        $add_profile = (Tools::getValue('action') == 'addProfile');
+        
 		$this->smarty->assign(array(
 			'img_stats' => $this->ebay_country->getImgStats(),
 			'alert' => $alerts,
@@ -1151,7 +1163,12 @@ class Ebay extends Module
 			'synchronisationValidator' => EbayValidatorTab::getSynchronisationTabConfiguration($this->ebay_profile->id),
 			'templateValidator' => EbayValidatorTab::getTemplateTabConfiguration($this->ebay_profile->id),
             'show_welcome' => ( ($ebay_send_stats !== false) && !$this->ebay_profile->getToken()),
-            'show_seller_tips' => ( ($ebay_send_stats !== false) && $this->ebay_profile->getToken() )
+            'show_seller_tips' => ( ($ebay_send_stats !== false) && $this->ebay_profile->getToken() ),
+            'current_profile' => $this->ebay_profile,
+            'current_profile_site_extension' => EbayCountrySpec::getSiteExtensionBySiteId($this->ebay_profile->ebay_site_id),
+            'profiles' => $profiles,
+            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles),
+            'add_profile' => $add_profile
 		));
 		
 		// test if multishop Screen and all shops
@@ -1162,7 +1179,7 @@ class Ebay extends Module
 		
 		if ($ebay_send_stats === false)
 			$template = $this->_displayFormStats();
-        elseif (!$this->ebay_profile->getToken())
+        elseif (!$this->ebay_profile->getToken() || $add_profile)
 			$template = $this->_displayFormRegister();
 		elseif($is_all_shops) 
 			$template = $this->_displayMultishopsList();
@@ -1256,14 +1273,22 @@ class Ebay extends Module
                     $ebay_username = Tools::getValue('eBayUsername');
 
 				$this->context->cookie->eBayUsername = $ebay_username;
-//				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
-				$this->ebay_profile->ebay_user_identifier = $ebay_username;
-                $this->ebay_profile->id_lang = Tools::getValue('ebay_language');
+                
+//                $ebay_country_spec = EbayCountrySpec::getInstanceByKey(Tools::getValue('ebay_country'));
 
-                $ebay_country_spec = EbayCountrySpec::getInstanceByKey(Tools::getValue('ebay_country'));
-                $this->ebay_profile->ebay_site_id = $ebay_country_spec->getSiteID();
-				$this->ebay_profile->save();
-				$this->ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', Tools::getValue('ebay_country'));
+                $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
+                
+                $this->ebay_profile = EbayProfile::getByLangShopSiteAndUsername((int)Tools::getValue('ebay_language'), $id_shop, Tools::getValue('ebay_country'), $ebay_username, $this->_getProductTemplateContent());
+                EbayProfile::setProfile($this->ebay_profile->id);
+                
+//				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
+
+//				$this->ebay_profile->ebay_user_identifier = $ebay_username;
+//                $this->ebay_profile->id_lang = (int)Tools::getValue('ebay_language');
+
+//                $this->ebay_profile->ebay_site_id = $ebay_country_spec->getSiteID();
+//				$this->ebay_profile->save();
+//				$this->ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', Tools::getValue('ebay_country'));
 			}
 
 			$smarty_vars['check_token_tpl'] = $this->_displayCheckToken();
@@ -1360,15 +1385,6 @@ class Ebay extends Module
 	 **/
 	private function _displayFormConfig()
 	{
-        // profiles data
-        $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
-        $profiles = EbayProfile::getProfilesByIdShop($id_shop);
-        $id_ebay_profiles = array();
-        foreach($profiles as &$profile) {
-            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);            
-            $id_ebay_profiles[] = $profile['id_ebay_profile'];
-        }
-        
 		$smarty_vars = array(
 			'class_general' => version_compare(_PS_VERSION_, '1.5', '>') ? 'uncinq' : 'unquatre',
 			'form_parameters' => $this->_displayFormParameters(),
@@ -1381,9 +1397,9 @@ class Ebay extends Module
 			'help' => $this->_displayHelp(),
 			'id_tab' => Tools::safeOutput(Tools::getValue('id_tab')),
 			'ebay_listings' => $this->_displayEbayListings(),
-            'id_ebay_profile' => $this->ebay_profile->id,
-            'profiles' => $profiles,
-            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles)
+//            'id_ebay_profile' => $this->ebay_profile->id,
+            //'profiles' => $profiles,
+//            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles)
 		);
 
 		$this->smarty->assign($smarty_vars);
@@ -1492,7 +1508,7 @@ class Ebay extends Module
 		}
 		else
 			$smarty_vars['relogin'] = false;
-
+        
 		if (Tools::getValue('action') == 'regenerate_token')
 			$smarty_vars['check_token_tpl'] = $this->_displayCheckToken();
 
@@ -1525,6 +1541,22 @@ class Ebay extends Module
 			'GTC' => $this->l('Good \'Till Canceled')
 		);
 	}
+    
+    private function _postProcessAddProfile()
+    {
+    	if ($ebay_username = Tools::getValue('eBayUsernamesList'))
+    	{
+            if ($ebay_username == -1)
+                $ebay_username = Tools::getValue('eBayUsername');
+
+    		$this->context->cookie->eBayUsername = $ebay_username;
+        
+            $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
+        
+            $this->ebay_profile = EbayProfile::getByLangShopSiteAndUsername((int)Tools::getValue('ebay_language'), $id_shop, Tools::getValue('ebay_country'), $ebay_username, $this->_getProductTemplateContent());
+            EbayProfile::setProfile($this->ebay_profile->id);
+    	}        
+    }
 
 	private function _postProcessConfig()
 	{

@@ -366,4 +366,12 @@ class EbayCountrySpec
         
         return null;
     }
+    
+    public static function getSiteExtensionBySiteId($site_id) {
+        foreach(self::$country_data as $country)
+            if ($country['site_id'] == $site_id)
+                return $country['site_extension'];
+        
+        return null;
+    }    
 }

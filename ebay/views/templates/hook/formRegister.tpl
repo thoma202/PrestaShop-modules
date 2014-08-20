@@ -32,38 +32,6 @@
 	</script>
 {/if}
 
-<!--
-<div class="ebay-boxes-2-col-table">
-    <div class="ebay-boxes-2-col-cell">
-        <div class="ebay-boxes-2-col-cell-content left">
-            <fieldset class="new">
-                <legend>Status of your eBay Add-on</legend>
-                <p id="ebay-no-profile">You don't have any profile setup yet!</p>
-                Your module is up to date
-            </fieldset>
-        </div>
-    </div>
-    <div class="ebay-boxes-2-col-cell">
-        <div class="ebay-boxes-2-col-cell-content right absolute">
-            <fieldset class="new">
-                <legend>How to install the module</legend>
-                
-                <a id="ebay-seller-tips-link">Hide seller tips</a>
-                
-                <img id="ebay-install-pict" src="{$path}views/img/install.jpg" />
-                <p id="ebay-install-title">Resources</p>
-                <ul id="ebay-install-ul">
-                    <li>Download the add-on installation guide</li>
-                    <li>eBay Seller center</li>
-                    <li>eBay fees for professional sellers</li>
-                    <li>Contact us</li>
-                </ul>
-            </fieldset>
-        </div>
-    </div>
-</div>
--->
-
 <fieldset class="new">
 	<legend>{l s='Register the module on eBay' mod='ebay'}</legend>
 
@@ -118,7 +86,7 @@
                             {/foreach}
                             <option value="-1">New eBay user</option>
                         </select>
-            			<input id="eBayUsernameInput" type="text" name="eBayUsername" value="{$ebay_username|escape:'htmlall':'UTF-8'}" />
+            			<input id="eBayUsernameInput" type="text" name="eBayUsername" value="" />
                         <div style="clear:both"></div>                             
                     </div>
                 
@@ -135,7 +103,7 @@
                     </div>
 
                     <div class="ebay-register-p">
-                        <label class="ebay-label" for="ebay_languages">{l s='Choose Prestashop product language:' mod='ebay'}</label>
+                        <label class="ebay-label" for="ebay_languages">{l s='Choose the language you want to list with:' mod='ebay'}</label>
             			<select name="ebay_language" id="ebay_languages" class="ebay_select ebay-float-right">
             				{if isset($languages) && $languages && sizeof($languages)}
             					{foreach from=$languages item='language' key='key'}

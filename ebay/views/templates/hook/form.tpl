@@ -131,40 +131,47 @@
                     </div>
                 {else}
                     	<legend>{l s='eBay Profiles' mod='ebay'}</legend>
-    
-                        <table class="table tableDnD" cellpadding="0" cellspacing="0">
-                    		<thead>
-                    			<tr class="nodrag nodrop">
-                                    <th>{l s='Id' mod='ebay'}</th>
-                                    <th>{l s='eBay User Id' mod='ebay'}</th>
-                                    <th>{l s='eBay Site' mod='ebay'}</th>
-                                    <th>{l s='Prestashop Shop' mod='ebay'}</th>
-                                    <th>{l s='Language' mod='ebay'}</th>
-                                    <th>{l s='Nb Products Synced' mod='ebay'}</th>
-                                    <th>{l s='Action' mod='ebay'}</th>                
-                                </tr>
-                            </thead>
-                            <tbody>
-                    			{foreach from=$profiles item=profile}            
-                                    {if $id_ebay_profile == $profile.id_ebay_profile}
-                                        <tr style="font-weight:bold">
-                                    {else}
-                                        <form id="ebay_profile_form_{$profile.id_ebay_profile}" method="post">
-                                            <input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile}" />
-                                        </form>
-                                        <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer">
-                                    {/if}
-                                        <td>{$profile.id_ebay_profile}</td>
-                                        <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
-                                        <td>eBay {$profile.site_name|escape:'htmlall'}</td>
-                                        <td>{$profile.name|escape:'htmlall'}</td>
-                                        <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
-                                        <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
-                                        <td align="center"><img src="/img/admin/edit.gif" /></td>                    
+                        {if $profiles && count($profiles)}
+                            <table class="table tableDnD" cellpadding="0" cellspacing="0">
+                        		<thead>
+                        			<tr class="nodrag nodrop">
+                                        <th>{l s='Id' mod='ebay'}</th>
+                                        <th>{l s='eBay User Id' mod='ebay'}</th>
+                                        <th>{l s='eBay Site' mod='ebay'}</th>
+                                        <th>{l s='Prestashop Shop' mod='ebay'}</th>
+                                        <th>{l s='Language' mod='ebay'}</th>
+                                        <th>{l s='Nb Products Synced' mod='ebay'}</th>
+                                        <th>{l s='Action' mod='ebay'}</th>
                                     </tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                        			{foreach from=$profiles item=profile}            
+                                        {if $current_profile->id == $profile.id_ebay_profile}
+                                            <tr style="font-weight:bold">
+                                                <td>{$profile.id_ebay_profile}</td>
+                                        {else}
+                                            <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer">
+                                                <td><form id="ebay_profile_form_{$profile.id_ebay_profile}" method="post"><input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile}" /><input type="hidden" name="action" value="logged" /></form>{$profile.id_ebay_profile}</td>                                                
+                                        {/if}
+                                            <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
+                                            <td>eBay {$profile.site_name|escape:'htmlall'}</td>
+                                            <td>{$profile.name|escape:'htmlall'}</td>
+                                            <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
+                                            <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
+                                            <td align="center"><img src="/img/admin/edit.gif" /></td>                    
+                                        </tr>
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                            <br>
+                            {l s='The bold profile is your current profile. To change the profile you are currently working with, click on the desired profile' mod='ebay'}
+                            <br><br>
+                            <a href="{$url|escape:'htmlall'}&action=addProfile"><img src="/img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
+                        {else}
+                            <legend>Status of your eBay Add-on</legend>
+                            <p id="ebay-no-profile">You don't have any profile setup yet!</p>
+                            Your module is up to date
+                        {/if}
                     {/if}
                 </fieldset>
             </div>
@@ -177,7 +184,7 @@
                     {if $show_seller_tips}
                         <a id="ebay-seller-tips-link" href>{l s='Hide seller tips' mod='ebay'}</a>
                     {/if}
-                    <img id="ebay-install-pict" src="{$path}views/img/install.jpg" />
+                    <a id="ebay_video_fancybox" href="https://www.youtube.com/watch?v=8u7FZizsZn8?autoplay=1"><img id="ebay-install-pict" src="{$path}views/img/install.jpg" /></a>
                     <p id="ebay-install-title">{l s='Resources' mod='ebay'}</p>
                     <ul id="ebay-install-ul">
                         <li>{l s='Download the add-on installation guide' mod='ebay'}</li>
@@ -237,6 +244,13 @@
             <div style="clear:both"></div>
         </div>
     </div>
+    {if $current_profile && !$add_profile}
+    <div class="ebay_gray_title_box">
+        {assign var="user_identifier" value=$current_profile->ebay_user_identifier|escape:'htmlall'}
+        {{l s='You are updating the "|profile_identifier| for eBay.|profile_domain|" profile' mod='ebay'}|replace:'|profile_identifier|':$user_identifier|replace:'|profile_domain|':$current_profile_site_extension}
+    </div>
+    {/if}
+    
     <script type="text/javascript">
         $(document).ready(function() {
           $('#ebay-seller-tips-link').click(function(event) {
@@ -251,6 +265,26 @@
               }
               return false;
           });
+          
+      	$("#ebay_video_fancybox").click(function() {
+      		$.fancybox({
+      			'padding'		: 0,
+      			'autoScale'		: false,
+      			'transitionIn'	: 'none',
+      			'transitionOut'	: 'none',
+      			'title'			: this.title,
+      			'width'			: 640,
+      			'height'		: 385,
+      			'href'			: this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
+      			'type'			: 'swf',
+      			'swf'			: {
+      			'wmode'				: 'transparent',
+      			'allowfullscreen'	: 'true'
+      			}
+      		});
+
+      		return false;
+      	});          
         });
     </script>
 {/if}

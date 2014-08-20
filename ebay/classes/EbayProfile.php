@@ -223,6 +223,20 @@ class EbayProfile extends ObjectModel
 		return $final_carriers;
 	}
     
+    public function setDefaultConfig($template_content) 
+    {
+		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', ''); // fix to work around the PrestaShop bug when saving html for a configuration key that doesn't exist yet
+		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE', $template_content, true);
+		$this->setConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE', '{TITLE}');
+		$this->setConfiguration('EBAY_ORDER_LAST_UPDATE', date('Y-m-d\TH:i:s.000\Z'));
+		$this->setConfiguration('EBAY_DELIVERY_TIME', 2);
+		$this->setConfiguration('EBAY_ACTIVATE_LOGS', '0');
+		$this->setConfiguration('EBAY_ACTIVATE_MAILS', '0');
+		$this->setConfiguration('EBAY_LISTING_DURATION', 'GTC');
+		$this->setConfiguration('EBAY_AUTOMATICALLY_RELIST', 'on');
+		$this->setConfiguration('EBAY_LAST_RELIST', date('Y-m-d'));        
+    }
+    
 	/**
 	  * Get token from the ebay_user_identifier
 	  *
@@ -256,7 +270,7 @@ class EbayProfile extends ObjectModel
 			\''.pSQL($this->ebay_user_identifier).'\',
 			\''.pSQL($token).'\')';
 		DB::getInstance()->Execute($sql);        
-    }    
+    }
 	
 	/**
 	  * Is the profile configured
@@ -305,7 +319,7 @@ class EbayProfile extends ObjectModel
 	public static function getCurrent()
 	{
         $id_shop = EbayProfile::_getIdShop();
-            
+
         $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
         if ($current_profile) {
             $data = explode('_',$current_profile);
@@ -316,6 +330,7 @@ class EbayProfile extends ObjectModel
 
         // if shop has changed we switch to the first shop profile
         $ebay_profile = self::getOneByIdShop($id_shop);
+        
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $ebay_profile->id.'_'.$id_shop, false, 0, 0);
 		return $ebay_profile;
 	}
@@ -334,9 +349,10 @@ class EbayProfile extends ObjectModel
         }
         
         if (!$is_shop_profile)
-            return false;
+            return false;            
         
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $id_ebay_profile.'_'.$id_shop, false, 0, 0);
+        
         return true;
     }
     
@@ -352,8 +368,33 @@ class EbayProfile extends ObjectModel
     
     public static function getEbayUserIdentifiers() {
         $sql = 'SELECT DISTINCT(`ebay_user_identifier`)
-            FROM `'._DB_PREFIX_.'ebay_profile` ep';
+            FROM `'._DB_PREFIX_.'ebay_profile` ep
+            WHERE `ebay_user_identifier` != \'\'';
         return Db::getInstance()->executeS($sql);
+    }
+    
+    public static function getByLangShopSiteAndUsername($id_lang, $id_shop, $ebay_country, $ebay_user_identifier, $template_content) {
+        $ebay_country_spec = EbayCountrySpec::getInstanceByKey($ebay_country);
+        $ebay_site_id = $ebay_country_spec->getSiteID();
+        
+        $sql = 'SELECT `id_ebay_profile` 
+            FROM `'._DB_PREFIX_.'ebay_profile` ep
+            WHERE ep.`id_lang` = '.(int)$id_lang.'
+            AND ep.`id_shop` = '.(int)$id_shop.'
+            AND ep.`ebay_site_id` = '.(int)$ebay_site_id.'
+            AND ep.`ebay_user_identifier` = \''.pSQL($ebay_user_identifier).'\'';
+
+        if ($id_profile = Db::getInstance()->getValue($sql))
+            return new EbayProfile($id_profile);
+        
+        $ebay_profile = new EbayProfile();
+        $ebay_profile->id_lang = $id_lang;
+        $ebay_profile->id_shop = $id_shop;
+        $ebay_profile->ebay_site_id = $ebay_site_id;
+        $ebay_profile->ebay_user_identifier = $ebay_user_identifier;
+        $ebay_profile->save();
+        $ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', $ebay_country);
+        $ebay_profile->setDefaultConfig($template_content);
     }
     
 }
