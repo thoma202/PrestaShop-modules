@@ -316,21 +316,26 @@ class EbayProfile extends ObjectModel
 	  *
 	  * @return EbayProfile
 	  */    
-	public static function getCurrent()
+	public static function getCurrent($check_current_shop = true)
 	{
         $id_shop = EbayProfile::_getIdShop();
+        
 
         $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
         if ($current_profile) {
             $data = explode('_',$current_profile);
-            $current_profile_id_shop = (int)$data[1];
-            if ($current_profile_id_shop == $id_shop)
-                return new EbayProfile((int)$data[0]);            
+            if ($check_current_shop) {
+                $current_profile_id_shop = (int)$data[1];
+                if ($current_profile_id_shop == $id_shop) {
+                    return new EbayProfile((int)$data[0]);
+                }                
+            } else {
+                return new EbayProfile((int)$data[0]);                
+            }
         }
 
         // if shop has changed we switch to the first shop profile
         $ebay_profile = self::getOneByIdShop($id_shop);
-        
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $ebay_profile->id.'_'.$id_shop, false, 0, 0);
 		return $ebay_profile;
 	}

@@ -42,8 +42,10 @@ class EbayConfiguration
 	 */
 	public static function updateAPIToken()
 	{
-		$request = new EbayRequest();
-		$ebay_profile = EbayProfile::getCurrent();
+        $profile_data = explode('_', Configuration::get('EBAY_CURRENT_PROFILE'));
+        
+		$request = new EbayRequest($profile_data[0]);
+		$ebay_profile = EbayProfile::getCurrent(false);
 
 //		if ($token = $request->fetchToken(Configuration::get('EBAY_API_USERNAME', null, 0, 0), Configuration::get('EBAY_API_SESSION', null, 0, 0)))
 		if ($token = $request->fetchToken($ebay_profile->ebay_user_identifier, Configuration::get('EBAY_API_SESSION', null, 0, 0)))
