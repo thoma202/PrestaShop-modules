@@ -291,3 +291,9 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_stat` (
     `tries` TINYINT unsigned NOT NULL,
 	PRIMARY KEY  (`id_ebay_stat`)
 ) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
+
+$sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_user_identifier_token` (
+    `ebay_user_identifier` varchar(255) NOT NULL,
+    `token` text NOT NULL,
+    PRIMARY KEY (`ebay_user_identifier`)
+	) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';

@@ -62,7 +62,7 @@ class EbayValidatorTab{
 	public static function getParametersTabConfiguration($id_ebay_profile)
 	{
 		$configs_mandatory_profile = array('EBAY_PAYPAL_EMAIL', 'EBAY_SHOP_POSTALCODE');
-		$configs_mandatory = array('EBAY_API_USERNAME');
+		//$configs_mandatory = array('EBAY_API_USERNAME');
 		$ebay = new Ebay();
 		$ebay_profile = new EbayProfile($id_ebay_profile);
 		foreach ($configs_mandatory_profile as $config) 
@@ -74,7 +74,7 @@ class EbayValidatorTab{
 					'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . $config
 				);
 		}
-
+        /*
 		foreach ($configs_mandatory as $config) 
 		{
 			if((Configuration::get($config)) == null)
@@ -84,6 +84,13 @@ class EbayValidatorTab{
 					'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . $config
 				);
 		}
+        */
+		if(!$ebay_profile->ebay_user_identifier)
+			return array(
+				'indicator' => 'wrong',
+				'indicatorBig' => 'wrong',
+				'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . 'ebay user identifier'
+			);        
 
 		return array(
 			'indicator' => 'success'

@@ -118,8 +118,7 @@ foreach ($category_config_list as &$category) {
 }
 
 $smarty =  Context::getContext()->smarty;
-$id_currency = Context::getContext()->cookie->id_currency;
-$currency = new Currency((int) $id_currency);
+$currency = new Currency((int)$ebay_profile->getConfiguration('EBAY_CURRENCY'));
 
 
 /* Smarty datas */
