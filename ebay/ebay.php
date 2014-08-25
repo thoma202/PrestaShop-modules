@@ -95,7 +95,7 @@ class Ebay extends Module
 	{
 		$this->name = 'ebay';
 		$this->tab = 'market_place';
-		$this->version = '1.7.2';
+		$this->version = '1.8';
 		$this->stats_version = '1.0';
 
 		$this->author = 'PrestaShop';
@@ -520,11 +520,11 @@ class Ebay extends Module
 			}
 		}
         
-		if (version_compare($version, '1.7.2', '<')) {
+		if (version_compare($version, '1.8', '<')) {
 			if (version_compare(_PS_VERSION_, '1.5', '<'))
 			{
-				include_once(dirname(__FILE__).'/upgrade/Upgrade-1.7.2.php');
-				upgrade_module_1_7_2($this);
+				include_once(dirname(__FILE__).'/upgrade/Upgrade-1.8.php');
+				upgrade_module_1_8($this);
 			}
 		}        
 	}
