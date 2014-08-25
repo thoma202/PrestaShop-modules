@@ -24,9 +24,9 @@
  *  International Registered Trademark & Property of PrestaShop SA
  */
 
-function upgrade_module_1_8($module)
+function upgrade_module_1_7_2($module)
 {
-	include(dirname(__FILE__).'/sql/sql-upgrade-1-8.php');
+	include(dirname(__FILE__).'/sql/sql-upgrade-1-7-2.php');
 
 	if (!empty($sql) && is_array($sql))
 	{

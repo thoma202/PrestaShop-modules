@@ -392,14 +392,22 @@ class EbayProfile extends ObjectModel
         if ($id_profile = Db::getInstance()->getValue($sql))
             return new EbayProfile($id_profile);
         
+        // otherwise create the eBay profile
         $ebay_profile = new EbayProfile();
         $ebay_profile->id_lang = $id_lang;
         $ebay_profile->id_shop = $id_shop;
         $ebay_profile->ebay_site_id = $ebay_site_id;
         $ebay_profile->ebay_user_identifier = $ebay_user_identifier;
+
+		$returns_policy_configuration = new EbayReturnsPolicyConfiguration();
+		$returns_policy_configuration->save();		
+		$ebay_profile->id_ebay_returns_policy_configuration = $returns_policy_configuration->id;
+
         $ebay_profile->save();
         $ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', $ebay_country);
         $ebay_profile->setDefaultConfig($template_content);
+        
+        return $ebay_profile;
     }
     
 }

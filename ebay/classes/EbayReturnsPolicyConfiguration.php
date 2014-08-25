@@ -112,4 +112,15 @@ class EbayReturnsPolicyConfiguration extends ObjectModel
 		if ($row = Db::getInstance()->getRow($sql))
 			return $row['id_ebay_returns_policy_configuration'];
 	}
+    
+    // for upgrade to eBay module version 1.7
+    public static function createPreviousDefaultConfiguration() {
+		$returns_policy_configuration = new EbayReturnsPolicyConfiguration();
+		$returns_policy_configuration->ebay_returns_within = Configuration::get('EBAY_RETURNS_WITHIN');
+		$returns_policy_configuration->ebay_returns_who_pays = Configuration::get('EBAY_RETURNS_WHO_PAYS');
+		$returns_policy_configuration->ebay_returns_description = Configuration::get('EBAY_RETURNS_DESCRIPTION');
+		$returns_policy_configuration->ebay_returns_accepted_option = Configuration::get('EBAY_RETURNS_ACCEPTED_OPTION');     
+		$returns_policy_configuration->save();
+        return $returns_policy_configuration->id;        
+    }
 }
