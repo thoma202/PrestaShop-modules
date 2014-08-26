@@ -1493,7 +1493,7 @@ class Ebay extends Module
 			'picture_per_listing' => $picture_per_listing,
 			'hasEbayBoutique' => isset($user_profile['StoreUrl']) && !empty($user_profile['StoreUrl']) ? true : false,
 			'stats' => Configuration::get('EBAY_SEND_STATS'),
-            'currencies' => Currency::getCurrenciesByIdShop($this->ebay_profile->id_shop),
+            'currencies' => self::_getCurrenciesByIdShop($this->ebay_profile->id_shop),
             'current_currency' => (int)$this->ebay_profile->getConfiguration('EBAY_CURRENCY')
 		);
 
@@ -1582,7 +1582,7 @@ class Ebay extends Module
 			$picture_per_listing = 0;
         
         // we retrieve the potential currencies to make sure the selected currency exists in this shop
-        $currencies = Currency::getCurrenciesByIdShop($this->ebay_profile->id_shop);
+        $currencies = self::_getCurrenciesByIdShop($this->ebay_profile->id_shop);
         $currencies_ids = array_map(function($a) { return $a['id_currency']; }, $currencies);
 
 		if ($this->ebay_profile->setConfiguration('EBAY_PAYPAL_EMAIL', pSQL(Tools::getValue('ebay_paypal_email')))
@@ -2891,5 +2891,31 @@ class Ebay extends Module
 			exit;
 		}
 	}
-}
+    
+    /*
+     * for backward compatibility
+     *
+     *
+     */
+    
+    private function _getCurrenciesByIdShop($id_shop = 0)
+    {
+        if (version_compare(_PS_VERSION_, '1.5.1', '>='))
+            return Currency::getCurrenciesByIdShop($id_shop);
+        elseif (version_compare(_PS_VERSION_, '1.5', '>')) {
+    		$sql = 'SELECT *
+    				FROM `'._DB_PREFIX_.'currency` c
+    				LEFT JOIN `'._DB_PREFIX_.'currency_shop` cs ON (cs.`id_currency` = c.`id_currency`)
+    				'.($id_shop != 0 ? ' WHERE cs.`id_shop` = '.(int)$id_shop : '').'
+    				GROUP BY c.id_currency
+    				ORDER BY `name` ASC';
 
+    		return Db::getInstance()->executeS($sql);
+        } else {
+    		$sql = 'SELECT *
+    				FROM `'._DB_PREFIX_.'currency` c';            
+
+    		return Db::getInstance()->executeS($sql);
+        }
+    }
+}
