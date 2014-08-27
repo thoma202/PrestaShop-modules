@@ -1181,8 +1181,6 @@ class Ebay extends Module
 			$template = $this->_displayFormStats();
         elseif (!$this->ebay_profile->getToken() || $add_profile)
 			$template = $this->_displayFormRegister();
-		elseif($is_all_shops) 
-			$template = $this->_displayMultishopsList();
 		else
 			$template = $this->_displayFormConfig();			
 		return $this->display(__FILE__, 'views/templates/hook/form.tpl').$template;
@@ -1355,29 +1353,6 @@ class Ebay extends Module
 		return $this->display(__FILE__, 'views/templates/hook/checkToken.tpl');
 
 	}
-
-	/**
-	 * When no shop selected in multishops mode, display the shops list
-	 *
-	 **/
-	private function _displayMultishopsList()
-	{
-		$url_base = $_SERVER['REQUEST_URI'].(($_SERVER['QUERY_STRING']) ? '&' : '?').'setShopContext=s-';
-		$shops = Shop::getShops(false);
-		foreach ($shops as $i => $shop)
-		{
-			$profile = EbayProfile::getOneByIdShop($shop['id_shop']);
-			$shops[$i]['nb_products_synchronized'] = EbayProduct::getNbProducts($profile->id);
-		}
-		
-		$smarty_vars = array(
-			'shops' 	 => $shops,
-			'url_base' => $url_base
-		);
-		$this->smarty->assign($smarty_vars);			
-		return $this->display(__FILE__, 'views/templates/hook/shopsList.tpl');		
-	}
-
 
 	/**
 	 * Form Config Methods
