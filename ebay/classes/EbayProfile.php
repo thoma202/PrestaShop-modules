@@ -301,13 +301,15 @@ class EbayProfile extends ObjectModel
 		}
 	}
     
-    public static function _getIdShop() {
+    public static function _getIdShop($default_if_null = true) {
 		$id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
-		if (!$id_shop)
+        
+		if (!$id_shop && $default_if_null)
 			if(Configuration::get('PS_SHOP_DEFAULT'))
 				$id_shop = Configuration::get('PS_SHOP_DEFAULT');
 			else
 				$id_shop = 1;
+            
         return $id_shop;
     }
 	
@@ -318,15 +320,16 @@ class EbayProfile extends ObjectModel
 	  */    
 	public static function getCurrent($check_current_shop = true)
 	{
-        $id_shop = EbayProfile::_getIdShop();
+        $id_shop = EbayProfile::_getIdShop(false);
+        if ($id_shop)
+            $id_shop = 0;
         
-
         $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
         if ($current_profile) {
             $data = explode('_',$current_profile);
-            if ($check_current_shop) {
+            if ($check_current_shop && $id_shop) {
                 $current_profile_id_shop = (int)$data[1];
-                if ($current_profile_id_shop == $id_shop) {
+                if (($current_profile_id_shop == $id_shop) || ($current_profile_id_shop == 0)) {
                     return new EbayProfile((int)$data[0]);
                 }                
             } else {
@@ -341,20 +344,23 @@ class EbayProfile extends ObjectModel
 	}
     
     public static function setProfile($id_ebay_profile) {
-        $id_shop = EbayProfile::_getIdShop();
+        $id_shop = EbayProfile::_getIdShop(false);
+        if (!$id_shop)
+            $id_shop = 0;
         
         // check that this profile is for the current shop
         $shop_profiles = EbayProfile::getProfilesByIdShop($id_shop);
-        $is_shop_profile = false;
-        foreach ($shop_profiles as $profile) {
-            if ($profile['id_ebay_profile'] == $id_ebay_profile) {
-                $is_shop_profile = true;
-                break;
-            }
+        if ($id_shop) {
+            $is_shop_profile = false;
+            foreach ($shop_profiles as $profile) {
+                if ($profile['id_ebay_profile'] == $id_ebay_profile) {
+                    $is_shop_profile = true;
+                    break;
+                }
+            }            
+            if (!$is_shop_profile)
+                return false;            
         }
-        
-        if (!$is_shop_profile)
-            return false;            
         
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $id_ebay_profile.'_'.$id_shop, false, 0, 0);
         
