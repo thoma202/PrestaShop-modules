@@ -321,7 +321,7 @@ class EbayProfile extends ObjectModel
 	public static function getCurrent($check_current_shop = true)
 	{
         $id_shop = EbayProfile::_getIdShop(false);
-        if ($id_shop)
+        if (!$id_shop)
             $id_shop = 0;
         
         $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
@@ -340,6 +340,7 @@ class EbayProfile extends ObjectModel
         // if shop has changed we switch to the first shop profile
         $ebay_profile = self::getOneByIdShop($id_shop);
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $ebay_profile->id.'_'.$id_shop, false, 0, 0);
+        
 		return $ebay_profile;
 	}
     
@@ -415,5 +416,32 @@ class EbayProfile extends ObjectModel
         
         return $ebay_profile;
     }
+
+    public static function deleteById($id_ebay_profile) {
+        $tables = array(
+            'ebay_product',
+            'ebay_category_condition_configuration',
+            'ebay_category_condition',
+            'ebay_category_configuration',
+            'ebay_configuration',
+            'ebay_product_modified',
+            'ebay_shipping',
+            'ebay_shipping_international_zone',
+            'ebay_shipping_zone_excluded',
+            'ebay_profile'
+        );
+        foreach ($tables as $table) {
+            Db::getInstance()->delete(_DB_PREFIX_.$table, '`id_ebay_profile` = '.(int)$id_ebay_profile);
+        }
+        
+        // if the profile deleted is the current one, we reset the EBAY_CURRENT_PROFILE
+        $current_profile = Configuration::get('EBAY_CURRENT_PROFILE');
+        $data = explode('_', $current_profile);
+        if ($data[0] == $id_ebay_profile)
+            Configuration::deleteByName('EBAY_CURRENT_PROFILE');
+        
+        
+        return true;
+    }    
     
 }

@@ -1168,7 +1168,8 @@ class Ebay extends Module
             'current_profile_site_extension' => EbayCountrySpec::getSiteExtensionBySiteId($this->ebay_profile->ebay_site_id),
             'profiles' => $profiles,
             'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles),
-            'add_profile' => $add_profile
+            'add_profile' => $add_profile,
+            'delete_profile_url' => _MODULE_DIR_.'ebay/ajax/deleteProfile.php?token='.Configuration::get('EBAY_SECURITY_TOKEN').'&time='.pSQL(date('Ymdhis'))
 		));
 		
 		// test if multishop Screen and all shops

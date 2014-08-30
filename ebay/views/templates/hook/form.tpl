@@ -139,9 +139,10 @@
                                         <th>{l s='eBay User Id' mod='ebay'}</th>
                                         <th>{l s='eBay Site' mod='ebay'}</th>
                                         <th>{l s='Prestashop Shop' mod='ebay'}</th>
-                                        <th>{l s='Language' mod='ebay'}</th>
-                                        <th>{l s='Nb Products Synced' mod='ebay'}</th>
-                                        <th>{l s='Action' mod='ebay'}</th>
+                                        <th class="center">{l s='Language' mod='ebay'}</th>
+                                        <th class="center">{l s='Nb Products Synced' mod='ebay'}</th>
+                                        <th class="center">{l s='Action' mod='ebay'}</th>
+                                        <th class="center">{l s='Delete Profile' mod='ebay'}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -158,7 +159,8 @@
                                             <td>{$profile.name|escape:'htmlall'}</td>
                                             <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
                                             <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
-                                            <td align="center"><img src="/img/admin/edit.gif" /></td>                    
+                                            <td align="center"><img src="/img/admin/edit.gif" /></td>
+                                            <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile}"><img src="/img/admin/delete.gif" /></a></td>     
                                         </tr>
                                     {/foreach}
                                 </tbody>
@@ -253,7 +255,7 @@
     
     <script type="text/javascript">
         $(document).ready(function() {
-          $('#ebay-seller-tips-link').click(function(event) {
+            $('#ebay-seller-tips-link').click(function(event) {
               event.preventDefault();
               var sellerTips = $('#seller-tips');
               if (sellerTips.css('display') == 'none') {
@@ -264,27 +266,43 @@
                   sellerTips.hide();                  
               }
               return false;
-          });
+            });
           
-      	$("#ebay_video_fancybox").click(function() {
-      		$.fancybox({
-      			'padding'		: 0,
-      			'autoScale'		: false,
-      			'transitionIn'	: 'none',
-      			'transitionOut'	: 'none',
-      			'title'			: this.title,
-      			'width'			: 640,
-      			'height'		: 385,
-      			'href'			: this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
-      			'type'			: 'swf',
-      			'swf'			: {
-      			'wmode'				: 'transparent',
-      			'allowfullscreen'	: 'true'
-      			}
-      		});
+          	$("#ebay_video_fancybox").click(function() {
+          		$.fancybox({
+          			'padding'		: 0,
+          			'autoScale'		: false,
+          			'transitionIn'	: 'none',
+          			'transitionOut'	: 'none',
+          			'title'			: this.title,
+          			'width'			: 640,
+          			'height'		: 385,
+          			'href'			: this.href.replace(new RegExp("watch\\?v=", "i"), 'v/'),
+          			'type'			: 'swf',
+          			'swf'			: {
+          			'wmode'				: 'transparent',
+          			'allowfullscreen'	: 'true'
+          			}
+          		});
 
-      		return false;
-      	});          
+          		return false;
+          	});
+        
+            $('.delete-profile').click(function(event) {
+                event.preventDefault();
+                var profileId = $(this).data('profile');
+                if (confirm('{l s='Are you sure you want to delete the profile number %profile_number%?' mod='ebay'}'.replace('%profile_number%', profileId))) {
+                    $.ajax({
+                        url: '{$delete_profile_url}&profile='+profileId,
+                        cache: false,
+                        success: function(data) {
+                            location.reload();
+                        }
+                    });
+                }
+                return false;
+            });
+            
         });
     </script>
 {/if}
