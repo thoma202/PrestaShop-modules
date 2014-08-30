@@ -2748,8 +2748,7 @@ class Ebay extends Module
 	private function _displayEbayListings()
 	{
 		$this->smarty->assign(array(
-			'id_employee' => $this->context->employee->id,
-			'ebay_listings' => EbaySynchronizer::getNbSynchronizableProducts($this->ebay_profile)
+			'id_employee' => $this->context->employee->id
 			));
 		return $this->display(__FILE__, 'views/templates/hook/ebay_listings.tpl');
 	}
@@ -2762,7 +2761,7 @@ class Ebay extends Module
 		$link = $this->context->link;
 		$id_lang = $this->context->language->id;
 		$products_ebay_listings = array();
-		$products = EbayProduct::getProductsWithoutBlacklisted($id_lang);
+		$products = EbayProduct::getProductsWithoutBlacklisted($id_lang, $this->ebay_profile->id);
 		$data = array(
 			'id_lang' => $id_lang,
 			'titleTemplate' => $this->ebay_profile->getConfiguration('EBAY_PRODUCT_TEMPLATE_TITLE')

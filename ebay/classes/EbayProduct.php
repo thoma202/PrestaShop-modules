@@ -123,7 +123,7 @@ class EbayProduct
 			WHERE `id_product_ref` = \''.pSQL($id_product_ref).'\'');
 	}
 
-	public static function getProductsWithoutBlacklisted($id_lang)
+	public static function getProductsWithoutBlacklisted($id_lang, $id_ebay_profile)
 	{ 
 		return Db::getInstance()->ExecuteS('
 			SELECT ep.`id_product`, ep.`id_attribute`, ep.`id_product_ref`,
@@ -134,7 +134,8 @@ class EbayProduct
 			LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product` = ep.`id_product`)
 			LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON (m.`id_manufacturer` = p.`id_manufacturer`)
 			LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (pl.`id_product` = p.`id_product` AND pl.`id_lang` = '.(int)$id_lang.')
-			WHERE epc.`blacklisted` = 0 OR epc.`blacklisted` IS NULL
+			WHERE ep.`id_ebay_profile` = '.(int)$id_ebay_profile.'
+            AND (epc.`blacklisted` = 0 OR epc.`blacklisted` IS NULL)
 			');
 
 	}
