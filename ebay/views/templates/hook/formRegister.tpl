@@ -78,7 +78,7 @@
                     var usernamesVal = $('#eBayUsernamesList').val();
                     
                     // no existing identifier + token
-                    if ((usernamesVal == -1) || !identifiersToken[usernamesVal])
+                    if ((usernamesVal == undefined) || (usernamesVal == -1) || !identifiersToken[usernamesVal])
                         window.open(link + "{/literal}{$window_open_url}{literal}");
 				}
 			});
