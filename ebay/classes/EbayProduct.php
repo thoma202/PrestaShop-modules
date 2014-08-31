@@ -56,12 +56,15 @@ class EbayProduct
 
         $nb_shop_products = count($id_shop_products);
         
-        $sql2 = 'SELECT count(*)
-            FROM `'._DB_PREFIX_.'ebay_product`
-            WHERE `id_product` IN ('.implode(',', $id_shop_products).')';
-        $nb_synchronized_products = Db::getInstance()->getValue($sql2);
-        
-        return number_format($nb_synchronized_products / $nb_shop_products * 100.0, 2);
+        if ($nb_shop_products)
+        {
+            $sql2 = 'SELECT count(*)
+                FROM `'._DB_PREFIX_.'ebay_product`
+                WHERE `id_product` IN ('.implode(',', $id_shop_products).')';
+            $nb_synchronized_products = Db::getInstance()->getValue($sql2);            
+            return number_format($nb_synchronized_products / $nb_shop_products * 100.0, 2);
+        } else
+            return '-';
     }
 
     public static function getProductsIdFromTable($a)

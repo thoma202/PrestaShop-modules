@@ -65,15 +65,26 @@ class EbayValidatorTab{
 		//$configs_mandatory = array('EBAY_API_USERNAME');
 		$ebay = new Ebay();
 		$ebay_profile = new EbayProfile($id_ebay_profile);
+        
+        $has_something_configured = false;
+        $return_message = null;
 		foreach ($configs_mandatory_profile as $config) 
 		{
-			if(($ebay_profile->getConfiguration($config)) == null)
-				return array(
-					'indicator' => 'wrong',
-					'indicatorBig' => 'wrong',
-					'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . $config
-				);
+			if(($ebay_profile->getConfiguration($config)) == null) {
+                if (!$return_message)
+                    $return_message = array(
+                        'indicator' => 'wrong',
+                        'indicatorBig' => 'wrong',
+                        'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab').' '.$config
+                    );
+			} else
+                $has_something_configured = true;
 		}
+        
+        // if nothing is configured, we don't show a message
+        if ($has_something_configured && $return_message)
+            return $return_message;
+        
         /*
 		foreach ($configs_mandatory as $config) 
 		{
@@ -89,7 +100,7 @@ class EbayValidatorTab{
 			return array(
 				'indicator' => 'wrong',
 				'indicatorBig' => 'wrong',
-				'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . 'ebay user identifier'
+				'message' => $ebay->l('Your need to configure the field ', 'ebayvalidatortab') . ' ebay user identifier'
 			);        
 
 		return array(

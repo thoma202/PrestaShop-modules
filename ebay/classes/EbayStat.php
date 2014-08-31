@@ -37,6 +37,9 @@ class EbayStat
     
     function __construct($stats_version, $ebay_profile)
     {
+        if (!$ebay_profile)
+            return;
+        
         $this->stats_version = $stats_version;
         $this->id_ebay_profile = (int)$ebay_profile->id;
         
@@ -74,6 +77,9 @@ class EbayStat
     
     public function save()
     {
+        if (!$this->id_ebay_profile)
+            return;
+        
         $sql = 'SELECT count(*)
             FROM `'._DB_PREFIX_.'ebay_stat`
             WHERE `id_ebay_profile` = '.(int)$this->id_ebay_profile;

@@ -57,13 +57,18 @@ class EbayRequest
 		/** Backward compatibility */
 		require(dirname(__FILE__).'/../backward_compatibility/backward.php');
 
+		$this->itemConditionError = false;
+		$this->debug = (boolean)Configuration::get('EBAY_ACTIVATE_LOGS');
+
         if ($id_ebay_profile)
             $this->ebay_profile = new EbayProfile($id_ebay_profile);
         else
             $this->ebay_profile = EbayProfile::getCurrent();
-		$this->ebay_country = EbayCountrySpec::getInstanceByKey($this->ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT'), $this->dev);
-		$this->itemConditionError = false;
-		$this->debug = (boolean)Configuration::get('EBAY_ACTIVATE_LOGS');
+
+        if ($this->ebay_profile)
+            $this->ebay_country = EbayCountrySpec::getInstanceByKey($this->ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT'), $this->dev);
+        else
+            $this->ebay_country = EbayCountrySpec::getInstanceByKey('gb');            
 
 		/**
 		 * Sandbox params
@@ -736,7 +741,7 @@ class EbayRequest
 	private function _makeRequest($api_call, $vars, $shoppingEndPoint = false)
 	{
 		$vars = array_merge($vars, array(
-			'ebay_auth_token' => $this->ebay_profile->getToken(),
+			'ebay_auth_token' => ($this->ebay_profile ? $this->ebay_profile->getToken() : ''),
 			'error_language' => $this->ebay_country->getLanguage(),
 		));
 

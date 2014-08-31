@@ -237,6 +237,54 @@ class EbayProfile extends ObjectModel
 		$this->setConfiguration('EBAY_LAST_RELIST', date('Y-m-d'));        
     }
     
+    public function setPicturesSettings() 
+    {
+		// Default
+		if ($default = ImageType::getByNameNType('thickbox', 'products')) 
+		{
+			$sizeMedium = (int) $default['id_image_type'];
+		} 
+		else if ($medium = ImageType::getByNameNType('thickbox_default', 'products')) 
+		{
+			$sizeMedium = (int) $default['id_image_type'];
+		}
+		else 
+		{
+			$sizeMedium = 0;
+		}
+		// Small
+		if ($small = ImageType::getByNameNType('small', 'products')) 
+		{
+			$sizeSmall = (int) $small['id_image_type'];
+		} 
+		else if ($small = ImageType::getByNameNType('small_default', 'products')) 
+		{
+			$sizeSmall = (int) $small['id_image_type'];
+		}
+		else 
+		{
+			$sizeSmall = 0;
+		}
+		// Large
+		if ($large = ImageType::getByNameNType('large', 'products')) 
+		{
+			$sizeBig = (int) $large['id_image_type'];
+		} 
+		else if ($large = ImageType::getByNameNType('large_default', 'products')) 
+		{
+			$sizeBig = (int) $large['id_image_type'];
+		}
+		else 
+		{
+			$sizeBig = 0;
+		}
+
+		$this->setConfiguration('EBAY_PICTURE_SIZE_DEFAULT', $sizeMedium);
+		$this->setConfiguration('EBAY_PICTURE_SIZE_SMALL', $sizeSmall);
+		$this->setConfiguration('EBAY_PICTURE_SIZE_BIG', $sizeBig);
+		$this->setConfiguration('EBAY_PICTURE_PER_LISTING', 0);
+    }
+    
 	/**
 	  * Get token from the ebay_user_identifier
 	  *
@@ -339,6 +387,10 @@ class EbayProfile extends ObjectModel
 
         // if shop has changed we switch to the first shop profile
         $ebay_profile = self::getOneByIdShop($id_shop);
+        
+        if (!$ebay_profile)
+            return null;
+        
         Configuration::updateValue('EBAY_CURRENT_PROFILE', $ebay_profile->id.'_'.$id_shop, false, 0, 0);
         
 		return $ebay_profile;

@@ -80,13 +80,17 @@
                 
                     <div class="ebay-register-p">               
                 		<label class="ebay-label" for="eBayUsername">{l s='eBay User ID' mod='ebay'}</label>
-                        <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay-float-right">
-                            {foreach from=$ebay_user_identifiers item='profile'}
-                                <option value="{$profile.ebay_user_identifier}">{$profile.ebay_user_identifier}</option>
-                            {/foreach}
-                            <option value="-1">New eBay user</option>
-                        </select>
-            			<input id="eBayUsernameInput" type="text" name="eBayUsername" value="" />
+                        {if $ebay_user_identifiers|count}
+                            <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay-float-right">
+                                {foreach from=$ebay_user_identifiers item='profile'}
+                                    <option value="{$profile.ebay_user_identifier}">{$profile.ebay_user_identifier}</option>
+                                {/foreach}
+                                <option value="-1">New eBay user</option>
+                            </select>
+                			<input id="eBayUsernameInput" type="text" name="eBayUsername" value="" />
+                        {else}
+            			    <input id="eBayUsernameInput" type="text" name="eBayUsername" class="ebay-float-right" value="" />
+                        {/if}
                         <div style="clear:both"></div>                             
                     </div>
                 
@@ -115,7 +119,7 @@
                     </div>
 
             		<div class="margin-form">
-            			<input type="submit" id="ebayRegisterButton" class="button ebay-float-right" value="{l s='Link your ebay account' mod='ebay'}" />
+            			<input type="submit" id="ebayRegisterButton" name="ebayRegisterButton" class="button ebay-float-right" value="{l s='Link your ebay account' mod='ebay'}" />
             		</div>
             		<div class="clear both"></div>
                 </div>
@@ -144,7 +148,7 @@
 <script type="text/javascript">
     function checkeBayUsernameSelect() {
         var val = $('#eBayUsernamesList').val();
-        if (val == -1) {
+        if ((val == undefined) || (val == -1)) {
             $('#eBayUsernameInput').show();
         } else {
             $('#eBayUsernameInput').hide();
