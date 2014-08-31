@@ -1142,7 +1142,7 @@ class Ebay extends Module
 			'shippingValidator' => ($this->ebay_profile ?  EbayValidatorTab::getShippingTabConfiguration($this->ebay_profile->id) : ''),
 			'synchronisationValidator' => ($this->ebay_profile ? EbayValidatorTab::getSynchronisationTabConfiguration($this->ebay_profile->id) : ''),
 			'templateValidator' => ($this->ebay_profile ? EbayValidatorTab::getTemplateTabConfiguration($this->ebay_profile->id) : ''),
-            'show_welcome' => ( ($ebay_send_stats !== false) && (!$this->ebay_profile || !$this->ebay_profile->getToken())),
+            'show_welcome' => ( ($ebay_send_stats !== false) && (!count($id_ebay_profiles))),
             'show_seller_tips' => ( ($ebay_send_stats !== false) && $this->ebay_profile && $this->ebay_profile->getToken() ),
             'current_profile' => $this->ebay_profile,
             'current_profile_site_extension' => ($this->ebay_profile ? EbayCountrySpec::getSiteExtensionBySiteId($this->ebay_profile->ebay_site_id) : ''),

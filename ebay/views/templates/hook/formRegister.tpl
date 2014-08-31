@@ -53,6 +53,16 @@
 	}
 	</style>
 	<script>
+        {/literal}
+        {if $ebay_user_identifiers|count}
+            var identifiersToken = {
+                {foreach from=$ebay_user_identifiers item='profile'}
+                    "{$profile.identifier}": {if isset($profile.token)}true{else}false{/if}{if not $smarty.foreach.foo.last},{/if}
+                {/foreach}
+            };  
+        {/if}
+        {literal}
+    
 		$(document).ready(function() {
 			$('#ebayRegisterButton').click(function() {
 				if ($('#eBayUsername').val() == '')
@@ -64,8 +74,12 @@
 
 					var country = $("#ebay_countries").val();
 					var link = $("option[value=" + country + "]").data("signin");
-
-					window.open(link + "{/literal}{$window_open_url}{literal}");
+                    
+                    var usernamesVal = $('#eBayUsernamesList').val();
+                    
+                    // no existing identifier + token
+                    if ((usernamesVal == -1) || !identifiersToken[usernamesVal])
+                        window.open(link + "{/literal}{$window_open_url}{literal}");
 				}
 			});
 		});
@@ -83,7 +97,7 @@
                         {if $ebay_user_identifiers|count}
                             <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay_select ebay-float-right">
                                 {foreach from=$ebay_user_identifiers item='profile'}
-                                    <option value="{$profile.ebay_user_identifier}">{$profile.ebay_user_identifier}</option>
+                                    <option value="{$profile.identifier}">{$profile.identifier}</option>
                                 {/foreach}
                                 <option value="-1">New eBay user</option>
                             </select>

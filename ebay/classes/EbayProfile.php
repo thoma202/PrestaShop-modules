@@ -431,10 +431,18 @@ class EbayProfile extends ObjectModel
 	}
     
     public static function getEbayUserIdentifiers() {
-        $sql = 'SELECT DISTINCT(`ebay_user_identifier`)
+        $sql = 'SELECT DISTINCT(ep.`ebay_user_identifier`) AS `identifier`, euit.`token`
             FROM `'._DB_PREFIX_.'ebay_profile` ep
-            WHERE `ebay_user_identifier` != \'\'';
-        return Db::getInstance()->executeS($sql);
+            LEFT JOIN `'._DB_PREFIX_.'ebay_user_identifier_token` euit
+            ON ep.`ebay_user_identifier` = euit.`ebay_user_identifier`';
+        $res = Db::getInstance()->executeS($sql);
+        $identifiers_data = array();
+        foreach ($res as $row)
+            $identifiers_data[] = array(
+                'identifier' => $row['identifier'],
+                'token'      => $row['token']
+            );
+        return $identifiers_data;
     }
     
     public static function getByLangShopSiteAndUsername($id_lang, $id_shop, $ebay_country, $ebay_user_identifier, $template_content) {
