@@ -1283,7 +1283,7 @@ class Ebay extends Module
 			}
 
 			$smarty_vars = array_merge($smarty_vars, array(
-				'action_url' => Tools::safeOutput($_SERVER['REQUEST_URI']).'&action=logged',
+				'action_url' => $_SERVER['REQUEST_URI'].'&action=logged',
 				'ebay_username' => $this->context->cookie->eBayUsername,
 				'window_open_url' => '?SignIn&runame='.$ebay->runame.'&SessID='.$this->context->cookie->eBaySession,
 				'ebay_countries' => EbayCountrySpec::getCountries($ebay->getDev()),
@@ -1313,9 +1313,9 @@ class Ebay extends Module
 		);
 
 		if (version_compare(_PS_VERSION_, '1.5', '>'))
-			$url_vars['controller'] = Tools::safeOutput(Tools::getValue('controller'));
+			$url_vars['controller'] = Tools::getValue('controller');
 		else
-			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
+			$url_vars['tab'] = Tools::getValue('tab');
 
 		$url = _MODULE_DIR_.'ebay/ajax/checkToken.php?'.http_build_query(
 			array(
@@ -1326,7 +1326,7 @@ class Ebay extends Module
 		$smarty_vars = array(
 			'window_location_href' => $this->_getUrl($url_vars),
 			'url' => $url,
-			'request_uri' => Tools::safeOutput($_SERVER['REQUEST_URI'])
+			'request_uri' => $_SERVER['REQUEST_URI']
 		);
 
 		$this->smarty->assign($smarty_vars);
@@ -1351,7 +1351,7 @@ class Ebay extends Module
 			'form_ebay_sync' => $this->_displayFormEbaySync(),
 			'orders_history' => $this->_displayOrdersHistory(),
 			'help' => $this->_displayHelp(),
-			'id_tab' => Tools::safeOutput(Tools::getValue('id_tab')),
+			'id_tab' => Tools::getValue('id_tab'),
 			'ebay_listings' => $this->_displayEbayListings(),
 //            'id_ebay_profile' => $this->ebay_profile->id,
             //'profiles' => $profiles,
@@ -1374,14 +1374,14 @@ class Ebay extends Module
 		);
 
 		if (version_compare(_PS_VERSION_, '1.5', '>'))
-			$url_vars['controller'] = Tools::safeOutput(Tools::getValue('controller'));
+			$url_vars['controller'] = Tools::getValue('controller');
 		else
-			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
+			$url_vars['tab'] = Tools::getValue('tab');
 
 		$url = $this->_getUrl($url_vars);
-		$ebay_identifier = Tools::safeOutput(Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier)).'" '.((Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier) != '') ? ' readonly="readonly"' : '');
+		$ebay_identifier = Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier).'" '.((Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier) != '') ? ' readonly="readonly"' : '');
 		$ebayShop = $this->ebay_profile->getConfiguration('EBAY_SHOP') ? $this->ebay_profile->getConfiguration('EBAY_SHOP') : $this->StoreName;
-		$ebayShopValue = Tools::safeOutput(Tools::getValue('ebay_shop', $ebayShop));
+		$ebayShopValue = Tools::getValue('ebay_shop', $ebayShop);
 		$createShopUrl = 'http://cgi3.ebay.'.$this->ebay_country->getSiteExtension().'/ws/eBayISAPI.dll?CreateProductSubscription&&productId=3&guest=1';
 
 		$ebay = new EbayRequest();
@@ -1395,8 +1395,8 @@ class Ebay extends Module
 		$sync_orders_by_cron_url = $this->_getModuleUrl().'synchronizeOrders_CRON.php';
 		$returnsConditionAccepted = Tools::getValue('ebay_returns_accepted_option', Configuration::get('EBAY_RETURNS_ACCEPTED_OPTION'));
 		
-		$ebay_paypal_email = Tools::safeOutput(Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL')));
-		$shopPostalCode = Tools::safeOutput(Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE')));
+		$ebay_paypal_email = Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL'));
+		$shopPostalCode = Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE'));
 		$ebayListingDuration = $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') ? $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') : 'GTC';
 		$sizedefault = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT');
 		$sizeBig = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG');
@@ -1417,10 +1417,10 @@ class Ebay extends Module
 			'ebayCountry' => EbayCountrySpec::getInstanceByKey($this->ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT')),
 			'ebayReturns' => preg_replace('#<br\s*?/?>#i', "\n", $this->ebay_profile->getReturnsPolicyConfiguration()->ebay_returns_description),
 			'ebayShopValue' => $ebayShopValue,
-			'shopPostalCode' => Tools::safeOutput(Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE'))),
+			'shopPostalCode' => Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE')),
 			'listingDurations' => $this->_getListingDurations(),
 			'ebayShop' => $this->ebay_profile->getConfiguration('EBAY_SHOP'),
-			'ebay_paypal_email' => Tools::safeOutput(Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL'))),
+			'ebay_paypal_email' => Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL')),
 			'returnsConditionAccepted' => Tools::getValue('ebay_returns_accepted_option', $returns_policy_configuration->ebay_returns_accepted_option),
 			'automaticallyRelist' => $this->ebay_profile->getConfiguration('EBAY_AUTOMATICALLY_RELIST'),
 			'ebay_paypal_email' => $ebay_paypal_email,
@@ -1684,7 +1684,7 @@ class Ebay extends Module
 
 		// Smarty
 		$template_vars = array(
-			'id_tab' => Tools::safeOutput(Tools::getValue('id_tab')),
+			'id_tab' => Tools::getValue('id_tab'),
 			'controller' => Tools::getValue('controller'),
 			'tab' => Tools::getValue('tab'),
 			'configure' => Tools::getValue('configure'),
@@ -1995,9 +1995,9 @@ class Ebay extends Module
 		);
 
 		if (version_compare(_PS_VERSION_, '1.5', '>'))
-			$url_vars['controller'] = Tools::safeOutput(Tools::getValue('controller'));
+			$url_vars['controller'] = Tools::getValue('controller');
 		else
-			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
+			$url_vars['tab'] = Tools::getValue('tab');
 
 		$zones = Zone::getZones(true);
 		foreach ($zones as &$zone)
@@ -2046,9 +2046,9 @@ class Ebay extends Module
 		);
 
 		if (version_compare(_PS_VERSION_, '1.5', '>'))
-			$url_vars['controller'] = Tools::safeOutput(Tools::getValue('controller'));
+			$url_vars['controller'] = Tools::getValue('controller');
 		else
-			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
+			$url_vars['tab'] = Tools::getValue('tab');
 
 		$action_url = $this->_getUrl($url_vars);
 		$forbiddenJs = array('textarea', 'script', 'onmousedown', 'onmousemove', 'onmmouseup', 'onmouseover', 'onmouseout', 'onload', 'onunload', 'onfocus', 'onblur', 'onchange', 'onsubmit', 'ondblclick', 'onclick', 'onkeydown', 'onkeyup', 'onkeypress', 'onmouseenter', 'onmouseleave', 'onerror');
@@ -2214,9 +2214,9 @@ class Ebay extends Module
 		);
 
 		if (version_compare(_PS_VERSION_, '1.5', '>'))
-			$url_vars['controller'] = Tools::safeOutput(Tools::getValue('controller'));
+			$url_vars['controller'] = Tools::getValue('controller');
 		else
-			$url_vars['tab'] = Tools::safeOutput(Tools::getValue('tab'));
+			$url_vars['tab'] = Tools::getValue('tab');
 
 		$action_url = $this->_getUrl($url_vars);
 
@@ -2285,7 +2285,7 @@ class Ebay extends Module
 		if (file_exists(dirname(__FILE__).'/log/syncError.php'))
 			@unlink(dirname(__FILE__).'/log/syncError.php');
 
-		$this->setConfiguration('EBAY_SYNC_MODE', Tools::safeOutput(Tools::getValue('ebay_sync_mode')));
+		$this->setConfiguration('EBAY_SYNC_MODE', Tools::getValue('ebay_sync_mode'));
 
 		if (Tools::getValue('ebay_sync_products_mode') == 'A')
 			$this->ebay_profile->setConfiguration('EBAY_SYNC_PRODUCTS_MODE', 'A');
@@ -2644,10 +2644,10 @@ class Ebay extends Module
 	private function _getUrl($extra_vars = array())
 	{
 		$url_vars = array(
-			'configure' => Tools::safeOutput(Tools::getValue('configure')),
-			'token' => Tools::safeOutput(Tools::getValue('token')),
-			'tab_module' => Tools::safeOutput(Tools::getValue('tab_module')),
-			'module_name' => Tools::safeOutput(Tools::getValue('module_name')),
+			'configure' => Tools::getValue('configure'),
+			'token' => Tools::getValue('token'),
+			'tab_module' => Tools::getValue('tab_module'),
+			'module_name' => Tools::getValue('module_name'),
 		);
 
 		return 'index.php?'.http_build_query(array_merge($url_vars, $extra_vars));
