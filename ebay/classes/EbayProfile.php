@@ -331,7 +331,7 @@ class EbayProfile extends ObjectModel
 			$this->_loadConfiguration();
 		return (count($this->configurations) > 0);
 	}
-	
+    
 	public static function getOneByIdShop($id_shop)
 	{
 		// check if one profile exists otherwise creates it

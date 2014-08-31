@@ -1412,7 +1412,7 @@ class Ebay extends Module
 			'ebayIdentifier' => $ebay_identifier,
 			'configCurrencysign' => $config_currency->sign,
 			'policies' => $this->_getReturnsPolicies(),
-			'catLoaded' => !Configuration::get('EBAY_CATEGORY_LOADED'),
+			'catLoaded' => !Configuration::get('EBAY_CATEGORY_LOADED_'.$this->ebay_profile->ebay_site_id),
 			'createShopUrl' => $createShopUrl,
 			'ebayCountry' => EbayCountrySpec::getInstanceByKey($this->ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT')),
 			'ebayReturns' => preg_replace('#<br\s*?/?>#i', "\n", $this->ebay_profile->getReturnsPolicyConfiguration()->ebay_returns_description),
@@ -1615,7 +1615,7 @@ class Ebay extends Module
 		$is_one_dot_five = version_compare(_PS_VERSION_, '1.5', '>');
 
 		// Load prestashop ebay's configuration
-		$configs = Configuration::getMultiple(array('EBAY_CATEGORY_LOADED', 'EBAY_SECURITY_TOKEN'));
+		$configs = Configuration::getMultiple(array('EBAY_CATEGORY_LOADED_'.$this->ebay_profile->ebay_site_id, 'EBAY_SECURITY_TOKEN'));
 
 		// Check if the module is configured
 		if (!$this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL'))
@@ -1642,12 +1642,13 @@ class Ebay extends Module
 		}
 
 		// Display eBay Categories
-		if (!isset($configs['EBAY_CATEGORY_LOADED']) || !$configs['EBAY_CATEGORY_LOADED'] || !EbayCategory::areCategoryLoaded())
+        $ebay_site_id = $this->ebay_profile->ebay_site_id;
+		if (!isset($configs['EBAY_CATEGORY_LOADED_'.$ebay_site_id]) || !$configs['EBAY_CATEGORY_LOADED_'.$ebay_site_id] || !EbayCategory::areCategoryLoaded($ebay_site_id))
 		{
 			$ebay = new EbayRequest();
-			EbayCategory::insertCategories($ebay->getCategories(), $ebay->getCategoriesSkuCompliancy());
-			$this->setConfiguration('EBAY_CATEGORY_LOADED', 1);
-			$this->setConfiguration('EBAY_CATEGORY_LOADED_DATE', date('Y-m-d H:i:s'));
+			EbayCategory::insertCategories($ebay_site_id, $ebay->getCategories(), $ebay->getCategoriesSkuCompliancy());
+			$this->setConfiguration('EBAY_CATEGORY_LOADED_'.$ebay_site_id, 1);
+			$this->setConfiguration('EBAY_CATEGORY_LOADED_'.$ebay_site_id.'_DATE', date('Y-m-d H:i:s')); // THIS LINE MIGHT BE REMOVED
 		}
 		
 		// Smarty
@@ -1956,7 +1957,7 @@ class Ebay extends Module
 	private function _displayFormShipping()
 	{	
 		$configKeys = array(
-			'EBAY_CATEGORY_LOADED',
+//			'EBAY_CATEGORY_LOADED_'.$this->ebay_profile->ebay_site_id,
 			'EBAY_SECURITY_TOKEN',
 			'PS_LANG_DEFAULT'
 		);
@@ -2584,7 +2585,7 @@ class Ebay extends Module
 
 		foreach (Db::getInstance()->ExecuteS($sql_get_cat_non_multi_sku) as $cat)
 		{
-			if ($cat['is_multi_sku'] != 1 && EbayCategory::getInheritedIsMultiSku($cat['id_category_ref']) != 1)
+			if ($cat['is_multi_sku'] != 1 && EbayCategory::getInheritedIsMultiSku($cat['id_category_ref'], $this->ebay_profile->ebay_site_id) != 1)
 			{
 				$catProblem = 0;
 				$category = new Category($cat['id_category']);

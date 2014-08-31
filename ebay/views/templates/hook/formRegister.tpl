@@ -81,7 +81,7 @@
                     <div class="ebay-register-p">               
                 		<label class="ebay-label" for="eBayUsername">{l s='eBay User ID' mod='ebay'}</label>
                         {if $ebay_user_identifiers|count}
-                            <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay-float-right">
+                            <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay_select ebay-float-right">
                                 {foreach from=$ebay_user_identifiers item='profile'}
                                     <option value="{$profile.ebay_user_identifier}">{$profile.ebay_user_identifier}</option>
                                 {/foreach}

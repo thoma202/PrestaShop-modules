@@ -67,9 +67,10 @@ class EbaySynchronizer
 
 			$quantity_product = EbaySynchronizer::_getProductQuantity($product, (int)$p['id_product']);
 
-			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default);
-			    
             $ebay_profile = new EbayProfile((int)$p['id_ebay_profile']);
+
+			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile->ebay_site_id);
+			    
 
 			$variations = EbaySynchronizer::_loadVariations($product, $ebay_profile, $context, $ebay_category);
             
@@ -377,10 +378,10 @@ class EbaySynchronizer
 	 * Returns the eBay category object. Check if that has been loaded before
 	 *
 	 **/
-	public static function _getEbayCategory($category_id)
+	public static function _getEbayCategory($category_id, $ebay_site_id)
 	{
 		if (!isset(EbaySynchronizer::$ebay_categories[$category_id]))
-			EbaySynchronizer::$ebay_categories[$category_id] = new EbayCategory(null, $category_id);
+			EbaySynchronizer::$ebay_categories[$category_id] = new EbayCategory($ebay_site_id, null, $category_id);
 
 		return EbaySynchronizer::$ebay_categories[$category_id];
 	}
@@ -540,7 +541,7 @@ class EbaySynchronizer
 		if ($product_id)
 		{
 			$product = new Product((int)$product_id, true, $id_lang);
-			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default);
+			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile->ebay_site_id);
 			$variations = EbaySynchronizer::_loadVariations($product, $ebay_profile, $context, $ebay_category);
 
 			//case where the product is multisku and could have been sent a several products

@@ -147,13 +147,8 @@
                                 </thead>
                                 <tbody>
                         			{foreach from=$profiles item=profile}            
-                                        {if $current_profile->id == $profile.id_ebay_profile}
-                                            <tr style="font-weight:bold">
-                                                <td>{$profile.id_ebay_profile}</td>
-                                        {else}
-                                            <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer">
+                                        <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer{if $current_profile->id == $profile.id_ebay_profile};font-weight:bold{/if}">
                                                 <td><form id="ebay_profile_form_{$profile.id_ebay_profile}" method="post"><input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile}" /><input type="hidden" name="action" value="logged" /></form>{$profile.id_ebay_profile}</td>                                                
-                                        {/if}
                                             <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
                                             <td>eBay {$profile.site_name|escape:'htmlall'}</td>
                                             <td>{$profile.name|escape:'htmlall'}</td>
