@@ -90,7 +90,7 @@
             <div id="ebay-register-left-col">
                 <div id="ebay-register-left-col-content">
             		<strong id="ebay-register-title">{l s='Link your eBay account to the eBay add-on' mod='ebay'}</strong>
-                    <p id="ebay-register-subtitle"><strong>I have a professional eBay account:</strong></p>
+                    <p id="ebay-register-subtitle"><strong>{l s='I have a professional eBay account:' mod='ebay'}</strong></p>
                 
                     <div class="ebay-register-p">               
                 		<label class="ebay-label" for="eBayUsername">{l s='eBay User ID' mod='ebay'}</label>
