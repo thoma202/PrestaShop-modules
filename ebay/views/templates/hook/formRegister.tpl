@@ -27,7 +27,7 @@
 
 	<script>
 		$(document).ready(function() {ldelim}
-				win = window.location.href = '{$redirect_url}';
+				win = window.location.href = '{$redirect_url|escape:'urlencode'}';
 		{rdelim});
 	</script>
 {/if}
@@ -44,7 +44,7 @@
 		.ebay_dl > * {float: left; margin: 10px 0 0 10px}
 		.ebay_dl > dt {min-width: 100px; display: block; clear: both; text-align: left}
 		#ebay_label {font-weight: normal; float: none}
-		#button_ebay{background-image:url({/literal}{$path}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:385px;height:191px;cursor:pointer;padding-bottom:70px;font-weight:bold;font-size:22px}
+		#button_ebay{background-image:url({/literal}{$path|escape:'htmlall'}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:385px;height:191px;cursor:pointer;padding-bottom:70px;font-weight:bold;font-size:22px}
 	input.primary {
 		text-shadow: none;
 		background: -webkit-gradient(linear, center top ,center bottom, from(#0055FF), to(#0055AA)) repeat scroll 0 0 transparent;
@@ -57,7 +57,7 @@
         {if $ebay_user_identifiers|count}
             var identifiersToken = {
                 {foreach from=$ebay_user_identifiers item='profile'}
-                    "{$profile.identifier}": {if isset($profile.token)}true{else}false{/if}{if not $smarty.foreach.foo.last},{/if}
+                    "{$profile.identifier|escape:'htmlall'}": {if isset($profile.token)}true{else}false{/if}{if not $smarty.foreach.foo.last},{/if}
                 {/foreach}
             };  
         {/if}
@@ -79,25 +79,25 @@
                     
                     // no existing identifier + token
                     if ((usernamesVal == undefined) || (usernamesVal == -1) || !identifiersToken[usernamesVal])
-                        window.open(link + "{/literal}{$window_open_url}{literal}");
+                        window.open(link + "{/literal}{$window_open_url|escape:'urlencode'}{literal}");
 				}
 			});
 		});
 		{/literal}
 	</script>
-	<form action="{$action_url}" method="post">
+	<form action="{$action_url|escape:'urlencode'}" method="post">
         <div id="ebay-register-content">
             <div id="ebay-register-left-col">
                 <div id="ebay-register-left-col-content">
             		<strong id="ebay-register-title">{l s='Link your eBay account to the eBay add-on' mod='ebay'}</strong>
-                    <p id="ebay-register-subtitle"><strong>I have a professional eBay account:</strong></p>
+                    <p id="ebay-register-subtitle"><strong>{l s='I have a professional eBay account:' mod='ebay'}</strong></p>
                 
                     <div class="ebay-register-p">               
                 		<label class="ebay-label" for="eBayUsername">{l s='eBay User ID' mod='ebay'}</label>
                         {if $ebay_user_identifiers|count}
                             <select id="eBayUsernamesList" name="eBayUsernamesList" class="ebay_select ebay-float-right">
                                 {foreach from=$ebay_user_identifiers item='profile'}
-                                    <option value="{$profile.identifier}">{$profile.identifier}</option>
+                                    <option value="{$profile.identifier|escape:'htmlall'}">{$profile.identifier|escape:'htmlall'}</option>
                                 {/foreach}
                                 <option value="-1">New eBay user</option>
                             </select>
@@ -113,7 +113,7 @@
             			<select name="ebay_country" id="ebay_countries" class="ebay_select ebay-float-right">
             				{if isset($ebay_countries) && $ebay_countries && sizeof($ebay_countries)}
             					{foreach from=$ebay_countries item='country' key='key'}
-            						<option value="{$key}" data-signin="{$country.signin}" {if $key == $default_country} selected{/if}>{if $country.subdomain}{$country.subdomain}.{/if}ebay.{$country.site_extension}</option>
+            						<option value="{$key|escape:'htmlall'}" data-signin="{$country.signin|escape:'htmlall'}" {if $key == $default_country} selected{/if}>{if $country.subdomain}{$country.subdomain|escape:'htmlall'}.{/if}ebay.{$country.site_extension|escape:'htmlall'}</option>
             					{/foreach}
             				{/if}
             			</select>
@@ -125,7 +125,7 @@
             			<select name="ebay_language" id="ebay_languages" class="ebay_select ebay-float-right">
             				{if isset($languages) && $languages && sizeof($languages)}
             					{foreach from=$languages item='language' key='key'}
-            						<option value="{$language.id_lang}">{$language.name}</option>
+            						<option value="{$language.id_lang|escape:'htmlall'}">{$language.name|escape:'htmlall'}</option>
             					{/foreach}
             				{/if}
             			</select>

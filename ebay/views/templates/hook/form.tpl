@@ -39,24 +39,24 @@
 </fieldset>
 <br />
 *}
-<link rel="stylesheet" href="{$css_file|escape:'htmlall'}" />
+<link rel="stylesheet" href="{$css_file|escape:'urlencode'}" />
 <script>
 	var $j = $;
 </script>
 {if substr($smarty.const._PS_VERSION_, 0, 3) == "1.4" || substr($smarty.const._PS_VERSION_, 0, 5) == "1.5.2"}
-	<link rel="stylesheet" href="{$fancyboxCss|escape:'htmlall'}" />
-	<script src="{$ebayjquery|escape:'htmlall'}"></script>
-	<script src="{$noConflicts|escape:'htmlall'}"></script>
+	<link rel="stylesheet" href="{$fancyboxCss|escape:'urlencode'}" />
+	<script src="{$ebayjquery|escape:'urlencode'}"></script>
+	<script src="{$noConflicts|escape:'urlencode'}"></script>
 	<script>
 		if(typeof($j172) != 'undefined')
 			$j = $j172;
 		else 
 			$j = $;
 	</script>
-	<script src="{$fancybox|escape:'htmlall'}"></script>
+	<script src="{$fancybox|escape:'urlencode'}"></script>
 {/if}
-<script src="{$tooltip|escape:'htmlall'}" type="text/javascript"></script>
-<script src="{$tips202|escape:'htmlall'}" type="text/javascript"></script>
+<script src="{$tooltip|escape:'urlencode'}" type="text/javascript"></script>
+<script src="{$tips202|escape:'urlencode'}" type="text/javascript"></script>
 
 {literal}
 
@@ -147,15 +147,15 @@
                                 </thead>
                                 <tbody>
                         			{foreach from=$profiles item=profile}            
-                                        <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile}').submit();" style="cursor:pointer{if $current_profile->id == $profile.id_ebay_profile};font-weight:bold{/if}">
-                                                <td><form id="ebay_profile_form_{$profile.id_ebay_profile}" method="post"><input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile}" /><input type="hidden" name="action" value="logged" /></form>{$profile.id_ebay_profile}</td>                                                
+                                        <tr onclick="document.getElementById('ebay_profile_form_{$profile.id_ebay_profile|escape:'htmlall'}').submit();" style="cursor:pointer{if $current_profile->id == $profile.id_ebay_profile};font-weight:bold{/if}">
+                                                <td><form id="ebay_profile_form_{$profile.id_ebay_profile|escape:'htmlall'}" method="post"><input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile|escape:'htmlall'}" /><input type="hidden" name="action" value="logged" /></form>{$profile.id_ebay_profile|escape:'htmlall'}</td>                                                
                                             <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
                                             <td>eBay {$profile.site_name|escape:'htmlall'}</td>
                                             <td>{$profile.name|escape:'htmlall'}</td>
-                                            <td align="center"><img src="/img/l/{$profile.id_lang}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
+                                            <td align="center"><img src="../img/l/{$profile.id_lang|escape:'htmlall'}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
                                             <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
-                                            <td align="center"><img src="/img/admin/edit.gif" /></td>
-                                            <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile}"><img src="/img/admin/delete.gif" /></a></td>     
+                                            <td align="center"><img src="../img/admin/edit.gif" /></td>
+                                            <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile|escape:'htmlall'}"><img src="../img/admin/delete.gif" /></a></td>     
                                         </tr>
                                     {/foreach}
                                 </tbody>
@@ -163,7 +163,7 @@
                             <br>
                             {l s='The bold profile is your current profile. To change the profile you are currently working with, click on the desired profile' mod='ebay'}
                             <br><br>
-                            <a href="{$url|escape:'htmlall'}&action=addProfile"><img src="/img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
+                            <a href="{$url|escape:'urlencode'}&action=addProfile"><img src="../img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
                         {else}
                             <legend>Status of your eBay Add-on</legend>
                             <p id="ebay-no-profile">You don't have any profile setup yet!</p>
@@ -181,7 +181,7 @@
                     {if $show_seller_tips}
                         <a id="ebay-seller-tips-link" href>{l s='Hide seller tips' mod='ebay'}</a>
                     {/if}
-                    <a id="ebay_video_fancybox" href="https://www.youtube.com/watch?v=8u7FZizsZn8?autoplay=1"><img id="ebay-install-pict" src="{$path}views/img/install.jpg" /></a>
+                    <a id="ebay_video_fancybox" href="https://www.youtube.com/watch?v=8u7FZizsZn8?autoplay=1"><img id="ebay-install-pict" src="{$path|escape:'htmlall'}views/img/install.jpg" /></a>
                     <p id="ebay-install-title">{l s='Resources' mod='ebay'}</p>
                     <ul id="ebay-install-ul">
                         <li>{l s='Download the add-on installation guide' mod='ebay'}</li>
@@ -202,7 +202,7 @@
             <div class="ebay-boxes-2-col-cell right">
                 <div class="ebay-boxes-2-col-cell-content">
                     <div id="ebay-welcome-left-content" style="padding-bottom: 3em">
-                        <img src="{$path}views/img/ebay.png" />                    
+                        <img src="{$path|escape:'htmlall'}views/img/ebay.png" />                    
                         <p class="title ebay-title">{l s='A PERFECT PARTNER FOR YOUR BUSINESS' mod='ebay'}</p>
                         <p>{{l s='eBay is one of the |b|largest marketplaces in the world that connects buyers and sellers of all sizes around the world|/b|.' mod='ebay'}|replace:'|b|':'<b>'|replace:'|/b|':'</b>'}</p>
 
@@ -288,7 +288,7 @@
                 var profileId = $(this).data('profile');
                 if (confirm('{l s='Are you sure you want to delete the profile number %profile_number%?' mod='ebay'}'.replace('%profile_number%', profileId))) {
                     $.ajax({
-                        url: '{$delete_profile_url}&profile='+profileId,
+                        url: '{$delete_profile_url|escape:'htmlall'}&profile='+profileId,
                         cache: false,
                         success: function(data) {
                             location.reload();
