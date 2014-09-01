@@ -28,7 +28,9 @@
 include_once (dirname(__FILE__).'/../../../config/config.inc.php');
 include_once dirname(__FILE__).'/../ebay.php';
 
-$ebay = new Ebay();
+$id_ebay_profile = (int)Tools::getValue('profile');
+
+$ebay = new Ebay($id_ebay_profile);
 
 if (!Configuration::get('EBAY_SECURITY_TOKEN') || Tools::getValue('token') != Configuration::get('EBAY_SECURITY_TOKEN'))
 {
@@ -72,7 +74,8 @@ foreach ($products as $product)
 
 /* cats ref */
 $ref_cats = Db::getInstance()->executeS('SELECT `id_ebay_category`, `id_category_ref`
-	FROM `'._DB_PREFIX_.'ebay_category` ');
+	FROM `'._DB_PREFIX_.'ebay_category`
+    WHERE `id_country` = '.(int)$ebay->ebay_profile->ebay_site_id);
 
 if (!is_array($ref_cats) || !count($ref_cats))
 	return;
