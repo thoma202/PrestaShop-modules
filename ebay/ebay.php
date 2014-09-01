@@ -95,7 +95,7 @@ class Ebay extends Module
 	{
 		$this->name = 'ebay';
 		$this->tab = 'market_place';
-		$this->version = '1.8-Dev1';
+		$this->version = '1.8-Dev3';
 		$this->stats_version = '1.0';
 
 		$this->author = 'PrestaShop';
@@ -1120,6 +1120,18 @@ class Ebay extends Module
         
         $add_profile = (Tools::getValue('action') == 'addProfile');
         
+		$url_vars = array(
+			'id_tab' => '1',
+			'section' => 'parameters',
+            'action' => 'addProfile'
+		);
+		if (version_compare(_PS_VERSION_, '1.5', '>'))
+			$url_vars['controller'] = Tools::getValue('controller');
+		else
+			$url_vars['tab'] = Tools::getValue('tab');
+
+        $add_profile_url = $this->_getUrl($url_vars);
+        
 		$this->smarty->assign(array(
 			'img_stats' => ($this->ebay_country ? $this->ebay_country->getImgStats() : ''),
 			'alert' => $alerts,
@@ -1151,6 +1163,7 @@ class Ebay extends Module
             'profiles' => $profiles,
             'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles),
             'add_profile' => $add_profile,
+            'add_profile_url' => $add_profile_url,
             'delete_profile_url' => _MODULE_DIR_.'ebay/ajax/deleteProfile.php?token='.Configuration::get('EBAY_SECURITY_TOKEN').'&time='.pSQL(date('Ymdhis'))
 		));
 		
@@ -1400,11 +1413,10 @@ class Ebay extends Module
 		$ebay_paypal_email = Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL'));
 		$shopPostalCode = Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE'));
 		$ebayListingDuration = $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') ? $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') : 'GTC';
-		$sizedefault = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT');
+		$sizedefault = $this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT');
 		$sizeBig = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG');
 		$sizesmall = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_SMALL');
 		$picture_per_listing = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_PER_LISTING');
-//		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
 		$user_profile = $ebay->getUserProfile($this->ebay_profile->ebay_user_identifier);
 
 		$smarty_vars = array(
@@ -1430,7 +1442,7 @@ class Ebay extends Module
 			'ebayListingDuration' => $ebayListingDuration,
 			'automaticallyRelist' => Configuration::get('EBAY_AUTOMATICALLY_RELIST'),
 			'sizes' => ImageType::getImagesTypes('products'),
-			'sizedefault' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT'),
+			'sizedefault' => $sizedefault,
 			'sizebig' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG'),
 			'sizesmall' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_SMALL'),
 			'sync_products_by_cron' => Configuration::get('EBAY_SYNC_PRODUCTS_BY_CRON'),
@@ -2447,8 +2459,8 @@ class Ebay extends Module
 
 	private function _getCarriers()
 	{
-		if (EbayShippingService::getTotal())
-			return EbayShippingService::getAll();
+		if (EbayShippingService::getTotal($this->ebay_profile->ebay_site_id))
+			return EbayShippingService::getAll($this->ebay_profile->ebay_site_id);
 
 		$ebay = new EbayRequest();
 		$carriers = $ebay->getCarriers();

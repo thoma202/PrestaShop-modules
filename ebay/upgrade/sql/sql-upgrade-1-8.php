@@ -31,6 +31,8 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_user_identifier_token`
     PRIMARY KEY (`ebay_user_identifier`)
 	) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8;';
     
-$sql[] = 'ALTER TABLE `'._DB_PREFIX_.'_ebay_category` DROP INDEX `id_category_ref`';
+$sql[] = 'ALTER TABLE `'._DB_PREFIX_.'ebay_category` DROP INDEX `id_category_ref`';
 
-$sql[] = 'ALTER TABLE  `ebay`.`ps_ebay_category` ADD UNIQUE (`id_category_ref`,`id_country`)';
+$sql[] = 'ALTER TABLE  `'._DB_PREFIX_.'ebay_category` ADD UNIQUE (`id_category_ref`,`id_country`)';
+
+$sql[] = 'ALTER TABLE  `'._DB_PREFIX_.'ebay_shipping_service` ADD `ebay_site_id` INT( 16 ) NOT NULL';

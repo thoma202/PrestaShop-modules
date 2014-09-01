@@ -55,9 +55,8 @@ class EbayCategorySpecific
 	 **/
 	public static function loadCategorySpecifics($id_ebay_profile)
 	{
-		$request = new EbayRequest();
+		$request = new EbayRequest($id_ebay_profile);
 		$ebay_category_ids = EbayCategoryConfiguration::getEbayCategoryIds($id_ebay_profile);
-
 
 		foreach ($ebay_category_ids as $ebay_category_id)
 		{
@@ -149,9 +148,12 @@ class EbayCategorySpecific
 
 	public static function getAllMandatory($id_ebay_profile)
 	{
+        $ebay_profile = new EbayProfile($id_ebay_profile);
 		return Db::getInstance()->ExecuteS('
 			SELECT * FROM '._DB_PREFIX_.'ebay_category_specific ecs	
-			INNER JOIN '._DB_PREFIX_.'ebay_category ec ON ecs.id_category_ref = ec.id_category_ref 
+			INNER JOIN '._DB_PREFIX_.'ebay_category ec 
+            ON ecs.id_category_ref = ec.id_category_ref 
+            AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
 			INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
             AND ecc.`id_ebay_profile` = '.(int)$id_ebay_profile.'
@@ -160,9 +162,12 @@ class EbayCategorySpecific
 
 	public static function getAllOptional($id_ebay_profile)
 	{
+        $ebay_profile = new EbayProfile($id_ebay_profile);
 		return Db::getInstance()->ExecuteS('
 			SELECT * FROM '._DB_PREFIX_.'ebay_category_specific ecs	
-			INNER JOIN '._DB_PREFIX_.'ebay_category ec ON ecs.id_category_ref = ec.id_category_ref 
+			INNER JOIN '._DB_PREFIX_.'ebay_category ec 
+            ON ecs.id_category_ref = ec.id_category_ref
+            AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
 			INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
             AND ecc.`id_ebay_profile` = '.(int)$id_ebay_profile.'
@@ -171,10 +176,12 @@ class EbayCategorySpecific
 
     public static function getNbOptionalItemSpecifics($id_ebay_profile)
     {
+        $ebay_profile = new EbayProfile($id_ebay_profile);
         $sql = 'SELECT count(*)
             FROM `'._DB_PREFIX_.'ebay_category_specific` ecs
             INNER JOIN `'._DB_PREFIX_.'ebay_category` ec
             ON ecs.`id_category_ref` = ec.`id_category_ref`
+            AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
             INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
             AND ecc.`id_ebay_profile` = '.(int)$id_ebay_profile.'

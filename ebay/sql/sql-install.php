@@ -153,6 +153,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_shipping_service` (
 		  `shippingServiceID` varchar(256) NOT NULL,
 		  `InternationalService` varchar(256) NOT NULL,
 		  `ServiceType` varchar(256) NOT NULL,
+          `ebay_site_id` int(16) NOT NULL,
 		  PRIMARY KEY (`id_shipping_service`)
 		) ENGINE='._MYSQL_ENGINE_.' DEFAULT CHARSET=utf8';
 

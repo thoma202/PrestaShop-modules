@@ -338,6 +338,7 @@ class EbayRequest
 				'shippingServiceID' => strip_tags($carrier->ShippingServiceID->asXML()),
 				'ServiceType' => strip_tags($carrier->ServiceType->asXML()),
 				'InternationalService' => (isset($carrier->InternationalService) ? strip_tags($carrier->InternationalService->asXML()) : false),
+                'ebay_site_id' => (int)$this->ebay_profile->ebay_site_id
 			);
 
 		return $carriers;
