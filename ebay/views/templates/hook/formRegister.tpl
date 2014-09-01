@@ -27,7 +27,7 @@
 
 	<script>
 		$(document).ready(function() {ldelim}
-				win = window.location.href = '{$redirect_url|escape:'htmlall'}';
+				win = window.location.href = '{$redirect_url|escape:'urlencode'}';
 		{rdelim});
 	</script>
 {/if}
@@ -79,13 +79,13 @@
                     
                     // no existing identifier + token
                     if ((usernamesVal == undefined) || (usernamesVal == -1) || !identifiersToken[usernamesVal])
-                        window.open(link + "{/literal}{$window_open_url|escape:'htmlall'}{literal}");
+                        window.open(link + "{/literal}{$window_open_url|escape:'urlencode'}{literal}");
 				}
 			});
 		});
 		{/literal}
 	</script>
-	<form action="{$action_url|escape:'htmlall'}" method="post">
+	<form action="{$action_url|escape:'urlencode'}" method="post">
         <div id="ebay-register-content">
             <div id="ebay-register-left-col">
                 <div id="ebay-register-left-col-content">

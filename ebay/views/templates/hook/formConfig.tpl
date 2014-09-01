@@ -35,15 +35,15 @@
 	<li id="menuTab6" class="menuTabButton">8. {l s='Order history' mod='ebay'}</li>
 </ul>
 <div id="tabList" class="{$class_general|escape:'htmlall'}">
-	<div id="menuTab1Sheet" class="tabItem selected">{if isset($parametersValidator.message)}<div class="ebay_{$parametersValidator.indicatorBig|escape:'htmlall'} big">{$parametersValidator.message|escape:'htmlall'}</div>{/if}{$form_parameters|escape:'htmlall'}</div>
-	<div id="menuTab2Sheet" class="tabItem">{if isset($categoryValidator.message)}<div class="ebay_{$categoryValidator.indicatorBig|escape:'htmlall'} big">{$categoryValidator.message|escape:'htmlall'}</div>{/if}{$form_category|escape:'htmlall'}</div>
-	<div id="menuTab8Sheet" class="tabItem">{if isset($itemSpecificValidator.message)}<div class="ebay_{$itemSpecificValidator.indicatorBig|escape:'htmlall'} big">{$itemSpecificValidator.message|escape:'htmlall'}</div>{/if}{$form_items_specifics|escape:'htmlall'}</div>
-	<div id="menuTab3Sheet" class="tabItem">{if isset($shippingValidator.message)}<div class="ebay_{$shippingValidator.indicatorBig|escape:'htmlall'} big">{$shippingValidator.message|escape:'htmlall'}</div>{/if}{$form_shipping|escape:'htmlall'}</div>
-	<div id="menuTab4Sheet" class="tabItem">{if isset($templateValidator.message)}<div class="ebay_{$templateValidator.indicatorBig|escape:'htmlall'} big">{$templateValidator.message|escape:'htmlall'}</div>{/if}{$form_template_manager|escape:'htmlall'}</div>
-	<div id="menuTab5Sheet" class="tabItem">{if isset($listingValidator.message)}<div class="ebay_{$listingValidator.indicatorBig|escape:'htmlall'} big">{$listingValidator.message|escape:'htmlall'}</div>{/if}{$form_ebay_sync|escape:'htmlall'}</div>
-	<div id="menuTab9Sheet" class="tabItem">{$ebay_listings|escape:'htmlall'}</div>
-	<div id="menuTab7Sheet" class="tabItem">{$help|escape:'htmlall'}</div>
-	<div id="menuTab6Sheet" class="tabItem">{$orders_history|escape:'htmlall'}</div>
+	<div id="menuTab1Sheet" class="tabItem selected">{if isset($parametersValidator.message)}<div class="ebay_{$parametersValidator.indicatorBig|escape:'htmlall'} big">{$parametersValidator.message|escape:'htmlall'}</div>{/if}{$form_parameters}</div>
+	<div id="menuTab2Sheet" class="tabItem">{if isset($categoryValidator.message)}<div class="ebay_{$categoryValidator.indicatorBig|escape:'htmlall'} big">{$categoryValidator.message|escape:'htmlall'}</div>{/if}{$form_category}</div>
+	<div id="menuTab8Sheet" class="tabItem">{if isset($itemSpecificValidator.message)}<div class="ebay_{$itemSpecificValidator.indicatorBig|escape:'htmlall'} big">{$itemSpecificValidator.message|escape:'htmlall'}</div>{/if}{$form_items_specifics}</div>
+	<div id="menuTab3Sheet" class="tabItem">{if isset($shippingValidator.message)}<div class="ebay_{$shippingValidator.indicatorBig|escape:'htmlall'} big">{$shippingValidator.message|escape:'htmlall'}</div>{/if}{$form_shipping}</div>
+	<div id="menuTab4Sheet" class="tabItem">{if isset($templateValidator.message)}<div class="ebay_{$templateValidator.indicatorBig|escape:'htmlall'} big">{$templateValidator.message|escape:'htmlall'}</div>{/if}{$form_template_manager}</div>
+	<div id="menuTab5Sheet" class="tabItem">{if isset($listingValidator.message)}<div class="ebay_{$listingValidator.indicatorBig|escape:'htmlall'} big">{$listingValidator.message|escape:'htmlall'}</div>{/if}{$form_ebay_sync}</div>
+	<div id="menuTab9Sheet" class="tabItem">{$ebay_listings}</div>
+	<div id="menuTab7Sheet" class="tabItem">{$help}</div>
+	<div id="menuTab6Sheet" class="tabItem">{$orders_history}</div>
 </div>
 <br clear="left" />
 <br />

@@ -27,8 +27,8 @@
 
 <style> 
 	{literal}
-	#button_ebay_sync1{background-image:url({/literal}{$path|escape:'htmlall'}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:500px;height:191px;cursor:pointer;padding-bottom:100px;font-weight:bold;font-size:25px;}
-			#button_ebay_sync2{background-image:url({/literal}{$path|escape:'htmlall'}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:500px;height:191px;cursor:pointer;padding-bottom:100px;font-weight:bold;font-size:15px;}
+	#button_ebay_sync1{background-image:url({/literal}{$path|escape:'urlencode'}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:500px;height:191px;cursor:pointer;padding-bottom:100px;font-weight:bold;font-size:25px;}
+			#button_ebay_sync2{background-image:url({/literal}{$path|escape:'urlencode'}{literal}views/img/ebay.png);background-repeat:no-repeat;background-position:center 90px;width:500px;height:191px;cursor:pointer;padding-bottom:100px;font-weight:bold;font-size:15px;}
 	.informations{
 		padding-bottom: 3px;margin-top: 8px;
 	}
@@ -55,7 +55,7 @@
 				params = params + "&action=0";
 
 			$.ajax({
-				url: "{/literal}{$nb_products_sync_url|escape:'htmlall'}{literal}" + params,
+				url: "{/literal}{$nb_products_sync_url|escape:'urlencode'}{literal}" + params,
 				success: function(data) {
 					
 					nbProducts = data;
@@ -116,7 +116,7 @@
 	{
 		counter++;
 		$.ajax({
-			url: '{/literal}{$sync_products_url|escape:'htmlall'}{literal}' + counter,
+			url: '{/literal}{$sync_products_url|escape:'urlencode'}{literal}' + counter,
 			success: function(data)
 			{
 				tab = data.split("|");
@@ -131,7 +131,7 @@
 	{/literal}
 </script>
 <div id="resultSync" style="text-align: center; font-weight: bold; font-size: 14px;"></div>
-<form action="{$action_url|escape:'htmlall'}" method="post" class="form" id="configForm4">
+<form action="{$action_url|escape:'urlencode'}" method="post" class="form" id="configForm4">
 	<fieldset style="border: 0">
 		<div class="warning big">
 			<b data-dialoghelp="http://pages.ebay.com/help/sell/listing-variations.html" data-inlinehelp="{l s='Find out more about multi-variation listings.' mod='ebay'}">{l s='Note: If some of your categories don’t support multi-variation listings, all variations will appear as separate listings.' mod='ebay'}</b>

@@ -28,4 +28,3 @@
 // Init
 $sql = array();
 
-$sql[] = 'TRUNCATE TABLE `'._DB_PREFIX_.'ebay_user_identifier_token`';

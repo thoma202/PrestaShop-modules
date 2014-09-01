@@ -166,7 +166,6 @@ class Ebay extends Module
                     $this->_postProcessConfig();
             }
 
-            //print_r($this->ebay_profile);echo Configuration::get('EBAY_CURRENT_PROFILE');die;
 			if(class_exists('EbayCountrySpec'))
 			{
                 if (!$this->ebay_profile) {
@@ -316,7 +315,7 @@ class Ebay extends Module
 	public function emptyEverything()
 	{
 		Db::getInstance()->Execute('DELETE FROM '._DB_PREFIX_.'configuration WHERE name LIKE  "%EBAY%"');
-		Db::getInstance()->Execute('DROP TABLE 
+		Db::getInstance()->Execute('DROP TABLE IF EXISTS
 		 `'._DB_PREFIX_.'ebay_category`,
 		 `'._DB_PREFIX_.'ebay_category_condition`,
 		 `'._DB_PREFIX_.'ebay_category_condition_configuration`,
@@ -343,8 +342,11 @@ class Ebay extends Module
 		 `'._DB_PREFIX_.'ebay_shipping_zone_excluded`,
 		 `'._DB_PREFIX_.'ebay_stat`,
 		 `'._DB_PREFIX_.'ebay_sync_history`,
-		 `'._DB_PREFIX_.'ebay_sync_history_product`;
+		 `'._DB_PREFIX_.'ebay_sync_history_product`,
+		 `'._DB_PREFIX_.'ebay_user_identifier_token`;
 		 ');
+
+		$this->uninstall();
 	}
 
     /*

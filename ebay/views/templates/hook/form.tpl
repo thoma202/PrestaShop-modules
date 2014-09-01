@@ -39,24 +39,24 @@
 </fieldset>
 <br />
 *}
-<link rel="stylesheet" href="{$css_file|escape:'htmlall'}" />
+<link rel="stylesheet" href="{$css_file|escape:'urlencode'}" />
 <script>
 	var $j = $;
 </script>
 {if substr($smarty.const._PS_VERSION_, 0, 3) == "1.4" || substr($smarty.const._PS_VERSION_, 0, 5) == "1.5.2"}
-	<link rel="stylesheet" href="{$fancyboxCss|escape:'htmlall'}" />
-	<script src="{$ebayjquery|escape:'htmlall'}"></script>
-	<script src="{$noConflicts|escape:'htmlall'}"></script>
+	<link rel="stylesheet" href="{$fancyboxCss|escape:'urlencode'}" />
+	<script src="{$ebayjquery|escape:'urlencode'}"></script>
+	<script src="{$noConflicts|escape:'urlencode'}"></script>
 	<script>
 		if(typeof($j172) != 'undefined')
 			$j = $j172;
 		else 
 			$j = $;
 	</script>
-	<script src="{$fancybox|escape:'htmlall'}"></script>
+	<script src="{$fancybox|escape:'urlencode'}"></script>
 {/if}
-<script src="{$tooltip|escape:'htmlall'}" type="text/javascript"></script>
-<script src="{$tips202|escape:'htmlall'}" type="text/javascript"></script>
+<script src="{$tooltip|escape:'urlencode'}" type="text/javascript"></script>
+<script src="{$tips202|escape:'urlencode'}" type="text/javascript"></script>
 
 {literal}
 
@@ -152,10 +152,10 @@
                                             <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
                                             <td>eBay {$profile.site_name|escape:'htmlall'}</td>
                                             <td>{$profile.name|escape:'htmlall'}</td>
-                                            <td align="center"><img src="/img/l/{$profile.id_lang|escape:'htmlall'}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
+                                            <td align="center"><img src="../img/l/{$profile.id_lang|escape:'htmlall'}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
                                             <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
-                                            <td align="center"><img src="/img/admin/edit.gif" /></td>
-                                            <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile|escape:'htmlall'}"><img src="/img/admin/delete.gif" /></a></td>     
+                                            <td align="center"><img src="../img/admin/edit.gif" /></td>
+                                            <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile|escape:'htmlall'}"><img src="../img/admin/delete.gif" /></a></td>     
                                         </tr>
                                     {/foreach}
                                 </tbody>
@@ -163,7 +163,7 @@
                             <br>
                             {l s='The bold profile is your current profile. To change the profile you are currently working with, click on the desired profile' mod='ebay'}
                             <br><br>
-                            <a href="{$url|escape:'htmlall'}&action=addProfile"><img src="/img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
+                            <a href="{$url|escape:'urlencode'}&action=addProfile"><img src="../img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
                         {else}
                             <legend>Status of your eBay Add-on</legend>
                             <p id="ebay-no-profile">You don't have any profile setup yet!</p>

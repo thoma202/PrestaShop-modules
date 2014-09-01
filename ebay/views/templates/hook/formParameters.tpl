@@ -27,7 +27,7 @@
 	{literal}
 	<script>
 		$(document).ready(function() {
-			win = window.redirect('{/literal}{$redirect_url|escape:'htmlall'}{literal}');
+			win = window.redirect('{/literal}{$redirect_url|escape:'urlencode'}{literal}');
 		});
 	</script>
 	{/literal}
@@ -55,7 +55,7 @@
 	</fieldset>	
 	{/if}
 	
-<form action="{$url|escape:'htmlall'}" method="post" class="form" id="configForm1">
+<form action="{$url|escape:'urlencode'}" method="post" class="form" id="configForm1">
 	
 	<fieldset style="margin-top:10px;">
 		<legend>{l s='Account details' mod='ebay'}</legend>
@@ -71,7 +71,7 @@
 				{if $ebayShop!== false}
 					<a href="http://stores.{if $ebayCountry->getSiteSubdomain()}{$ebayCountry->getSiteSubdomain()|escape:'htmlall'}.{/if}ebay.{$ebayCountry->getSiteExtension()|escape:'htmlall'}/{$ebayShop|escape:'htmlall'}" target="_blank">{l s='Your shop on eBay' mod='ebay'}</a>
 				{else} 
-					<a href="{$createShopUrl|escape:'htmlall'}" style="color:#7F7F7F;">
+					<a href="{$createShopUrl|escape:'urlencode'}" style="color:#7F7F7F;">
 						{l s='Open your shop' mod='ebay'}
 					</a>
 				{/if}
@@ -94,7 +94,7 @@
 		</div>
 		<div class="hide regenerate_token_button" style="display:none;">
 			<label>{l s='Regenerate Token' mod='ebay'} :</label>
-			<a href="{$url|escape:'htmlall'}&action=regenerate_token">
+			<a href="{$url|escape:'urlencode'}&action=regenerate_token">
 				<input type="button" id="token-btn" class="button" value="{l s='Regenerate Token' mod='ebay'}" />
 			</a>
 		</div>
@@ -262,7 +262,7 @@
 		</label>
 		<div class="margin-form">
 			
-			<a href="{$url|escape:'htmlall'}&EBAY_SYNC_ORDERS=1">
+			<a href="{$url|escape:'urlencode'}&EBAY_SYNC_ORDERS=1">
 				<input type="button" class="button" value="{l s='Sync Orders from eBay' mod='ebay'}" />
 			</a>
 	        <br>
@@ -273,7 +273,7 @@
         <div class="margin-form">
 			<input type="radio" size="20" name="sync_orders_mode" class="sync_orders_mode" value="save" {if $sync_orders_by_cron == false}checked="checked"{/if}/> {l s='every 30 minutes on page load' mod='ebay'}
 			<input type="radio" size="20" name="sync_orders_mode" class="sync_orders_mode" value="cron" {if $sync_orders_by_cron == true}checked="checked"{/if}/> {l s='by CRON task' mod='ebay'}<br>
-	        <p><a id="sync_orders_by_cron_url" href="{$sync_orders_by_cron_url|escape:'htmlall'}" target="_blank" style="{if $sync_orders_by_cron == false};display:none{/if}">{$sync_orders_by_cron_path|escape:'htmlall'}</a></p>
+	        <p><a id="sync_orders_by_cron_url" href="{$sync_orders_by_cron_url|escape:'urlencode'}" target="_blank" style="{if $sync_orders_by_cron == false};display:none{/if}">{$sync_orders_by_cron_path|escape:'urlencode'}</a></p>
         	
         </div>
 		<label>
@@ -282,7 +282,7 @@
         <div class="margin-form">
 			<input type="radio" size="20" name="sync_products_mode" class="sync_products_mode" value="save" {if $sync_products_by_cron == false}checked="checked"{/if}/> {l s='on save' mod='ebay'}
 			<input type="radio" size="20" name="sync_products_mode" class="sync_products_mode" value="cron" {if $sync_products_by_cron == true}checked="checked"{/if}/> {l s='by CRON task' mod='ebay'}<br>
-	        <p><a id="sync_products_by_cron_url" href="{$sync_products_by_cron_url|escape:'htmlall'}" target="_blank" style="{if $sync_products_by_cron == false};display:none{/if}">{$sync_products_by_cron_path|escape:'htmlall'}</a></p>
+	        <p><a id="sync_products_by_cron_url" href="{$sync_products_by_cron_url|escape:'urlencode'}" target="_blank" style="{if $sync_products_by_cron == false};display:none{/if}">{$sync_products_by_cron_path|escape:'urlencode'}</a></p>
         	
         </div>
 		<div class="clear both"></div>
@@ -317,7 +317,7 @@
 			});
 			
 			$('#token-btn').click(function() {
-					window.open(module_dir + 'ebay/pages/getSession.php?token={/literal}{$ebay_token|escape:'htmlall'}{literal}');			
+					window.open(module_dir + 'ebay/pages/getSession.php?token={/literal}{$ebay_token|escape:'urlencode'}{literal}');			
 			});
             
             $('.sync_products_mode').change(function() {

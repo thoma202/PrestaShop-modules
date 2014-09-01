@@ -81,7 +81,7 @@
 						theme_advanced_statusbar_location : "bottom",
 						theme_advanced_resizing : false,
 						content_css : "{$base_uri|escape:'htmlall'}themes/{$theme_name|escape:'htmlall'}/css/global.css",
-						document_base_url : "{$base_uri|escape:'htmlall'}",
+						document_base_url : "{$base_uri|escape:'urlencode'}",
 						width: "850",
 						height: "800",
 						font_size_style_values : "8pt, 10pt, 12pt, 14pt, 18pt, 24pt, 36pt",
@@ -101,7 +101,7 @@
 		{elseif $is_one_dot_five}
 			<script type="text/javascript">	
 				var iso = '{$iso|escape:'htmlall'}';
-				var pathCSS = '{$theme_css_dir|escape:'htmlall'}';
+				var pathCSS = '{$theme_css_dir|escape:'urlencode'}';
 				var ad = '{$ad|escape:'htmlall'}';
 			</script>
 			<script type="text/javascript" src="{$base_uri|escape:'htmlall'}js/tiny_mce/tiny_mce.js"></script>
@@ -275,7 +275,7 @@
 		{/if}
 	</fieldset>
 	<div id="buttonEbayShipping" style="margin-top:5px;">
-		<a href="{$action_url|escape:'htmlall'}&reset_template=1" class="button" onclick="return confirm('{l s='Are you sure?' mod='ebay'}');">{l s='Reset template' mod='ebay'}</a>
+		<a href="{$action_url|escape:'urlencode'}&reset_template=1" class="button" onclick="return confirm('{l s='Are you sure?' mod='ebay'}');">{l s='Reset template' mod='ebay'}</a>
 		<a id="previewButton" class="button">{l s='Preview' mod='ebay'}</a>
 		<input class="primary button" name="submitSave" type="submit" id="save_ebay_shipping" value="{l s='Save and continue' mod='ebay'}"/>
 	</div>
