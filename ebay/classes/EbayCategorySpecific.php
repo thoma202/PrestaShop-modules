@@ -55,9 +55,8 @@ class EbayCategorySpecific
 	 **/
 	public static function loadCategorySpecifics($id_ebay_profile)
 	{
-		$request = new EbayRequest();
+		$request = new EbayRequest($id_ebay_profile);
 		$ebay_category_ids = EbayCategoryConfiguration::getEbayCategoryIds($id_ebay_profile);
-
 
 		foreach ($ebay_category_ids as $ebay_category_id)
 		{
