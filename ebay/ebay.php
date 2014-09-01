@@ -2447,8 +2447,8 @@ class Ebay extends Module
 
 	private function _getCarriers()
 	{
-		if (EbayShippingService::getTotal())
-			return EbayShippingService::getAll();
+		if (EbayShippingService::getTotal($this->ebay_profile->ebay_site_id))
+			return EbayShippingService::getAll($this->ebay_profile->ebay_site_id);
 
 		$ebay = new EbayRequest();
 		$carriers = $ebay->getCarriers();
