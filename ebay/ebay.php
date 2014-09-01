@@ -1120,6 +1120,18 @@ class Ebay extends Module
         
         $add_profile = (Tools::getValue('action') == 'addProfile');
         
+		$url_vars = array(
+			'id_tab' => '1',
+			'section' => 'parameters',
+            'action' => 'addProfile'
+		);
+		if (version_compare(_PS_VERSION_, '1.5', '>'))
+			$url_vars['controller'] = Tools::getValue('controller');
+		else
+			$url_vars['tab'] = Tools::getValue('tab');
+
+        $add_profile_url = $this->_getUrl($url_vars);
+        
 		$this->smarty->assign(array(
 			'img_stats' => ($this->ebay_country ? $this->ebay_country->getImgStats() : ''),
 			'alert' => $alerts,
@@ -1151,6 +1163,7 @@ class Ebay extends Module
             'profiles' => $profiles,
             'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles),
             'add_profile' => $add_profile,
+            'add_profile_url' => $add_profile_url,
             'delete_profile_url' => _MODULE_DIR_.'ebay/ajax/deleteProfile.php?token='.Configuration::get('EBAY_SECURITY_TOKEN').'&time='.pSQL(date('Ymdhis'))
 		));
 		

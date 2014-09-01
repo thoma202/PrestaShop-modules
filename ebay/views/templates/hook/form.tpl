@@ -163,7 +163,7 @@
                             <br>
                             {l s='The bold profile is your current profile. To change the profile you are currently working with, click on the desired profile' mod='ebay'}
                             <br><br>
-                            <a href="{$url|escape:'urlencode'}&action=addProfile"><img src="../img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
+                            <a href="{$add_profile_url|escape:'urlencode'}"><img src="../img/admin/add.gif">{l s='Add a New Profile' mod='ebay'}</a>
                         {else}
                             <legend>Status of your eBay Add-on</legend>
                             <p id="ebay-no-profile">You don't have any profile setup yet!</p>

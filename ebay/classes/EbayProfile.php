@@ -241,43 +241,27 @@ class EbayProfile extends ObjectModel
     {
 		// Default
 		if ($default = ImageType::getByNameNType('thickbox', 'products')) 
-		{
-			$sizeMedium = (int) $default['id_image_type'];
-		} 
-		else if ($medium = ImageType::getByNameNType('thickbox_default', 'products')) 
-		{
-			$sizeMedium = (int) $default['id_image_type'];
-		}
+			$sizeMedium = (int)$default['id_image_type'];
+		elseif ($medium = ImageType::getByNameNType('thickbox_default', 'products')) 
+			$sizeMedium = (int)$default['id_image_type'];
 		else 
-		{
 			$sizeMedium = 0;
-		}
+        
 		// Small
 		if ($small = ImageType::getByNameNType('small', 'products')) 
-		{
 			$sizeSmall = (int) $small['id_image_type'];
-		} 
-		else if ($small = ImageType::getByNameNType('small_default', 'products')) 
-		{
+		elseif ($small = ImageType::getByNameNType('small_default', 'products')) 
 			$sizeSmall = (int) $small['id_image_type'];
-		}
 		else 
-		{
 			$sizeSmall = 0;
-		}
+        
 		// Large
 		if ($large = ImageType::getByNameNType('large', 'products')) 
-		{
 			$sizeBig = (int) $large['id_image_type'];
-		} 
-		else if ($large = ImageType::getByNameNType('large_default', 'products')) 
-		{
+		elseif ($large = ImageType::getByNameNType('large_default', 'products')) 
 			$sizeBig = (int) $large['id_image_type'];
-		}
 		else 
-		{
 			$sizeBig = 0;
-		}
 
 		$this->setConfiguration('EBAY_PICTURE_SIZE_DEFAULT', $sizeMedium);
 		$this->setConfiguration('EBAY_PICTURE_SIZE_SMALL', $sizeSmall);
