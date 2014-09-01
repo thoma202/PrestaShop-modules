@@ -179,7 +179,7 @@
                 <fieldset class="new">
                     <legend>{l s='How to install the module' mod='ebay'}</legend>
                     {if $show_seller_tips}
-                        <a id="ebay-seller-tips-link" href>{l s='Hide seller tips' mod='ebay'}</a>
+                        <a id="ebay-seller-tips-link" href>{l s='Show seller tips' mod='ebay'}</a>
                     {/if}
                     <a id="ebay_video_fancybox" href="https://www.youtube.com/watch?v=8u7FZizsZn8?autoplay=1"><img id="ebay-install-pict" src="{$path|escape:'htmlall'}views/img/install.jpg" /></a>
                     <p id="ebay-install-title">{l s='Resources' mod='ebay'}</p>
@@ -197,7 +197,7 @@
 
 <!-- seller tips -->
 {if $show_seller_tips}
-    <div id="seller-tips" class="ebay-welcome">
+    <div id="seller-tips" class="ebay-welcome" style="display:none">
         <div id="ebay-tips" class="ebay-boxes-2-col-table">
             <div class="ebay-boxes-2-col-cell right">
                 <div class="ebay-boxes-2-col-cell-content">
