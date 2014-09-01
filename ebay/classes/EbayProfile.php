@@ -240,10 +240,10 @@ class EbayProfile extends ObjectModel
     public function setPicturesSettings() 
     {
 		// Default
-		if ($default = ImageType::getByNameNType('thickbox', 'products')) 
-			$sizeMedium = (int)$default['id_image_type'];
+		if ($medium = ImageType::getByNameNType('thickbox', 'products')) 
+			$sizeMedium = (int)$medium['id_image_type'];
 		elseif ($medium = ImageType::getByNameNType('thickbox_default', 'products')) 
-			$sizeMedium = (int)$default['id_image_type'];
+			$sizeMedium = (int)$medium['id_image_type'];
 		else 
 			$sizeMedium = 0;
         
@@ -456,6 +456,7 @@ class EbayProfile extends ObjectModel
 
         $ebay_profile->save();
         $ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', $ebay_country);
+        $ebay_profile->setPicturesSettings();
         $ebay_profile->setDefaultConfig($template_content);
         
         return $ebay_profile;

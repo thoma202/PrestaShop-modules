@@ -1413,11 +1413,10 @@ class Ebay extends Module
 		$ebay_paypal_email = Tools::getValue('ebay_paypal_email', $this->ebay_profile->getConfiguration('EBAY_PAYPAL_EMAIL'));
 		$shopPostalCode = Tools::getValue('ebay_shop_postalcode', $this->ebay_profile->getConfiguration('EBAY_SHOP_POSTALCODE'));
 		$ebayListingDuration = $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') ? $this->ebay_profile->getConfiguration('EBAY_LISTING_DURATION') : 'GTC';
-		$sizedefault = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT');
+		$sizedefault = $this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT');
 		$sizeBig = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG');
 		$sizesmall = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_SMALL');
 		$picture_per_listing = (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_PER_LISTING');
-//		$user_profile = $ebay->getUserProfile(Configuration::get('EBAY_API_USERNAME'));
 		$user_profile = $ebay->getUserProfile($this->ebay_profile->ebay_user_identifier);
 
 		$smarty_vars = array(
@@ -1443,7 +1442,7 @@ class Ebay extends Module
 			'ebayListingDuration' => $ebayListingDuration,
 			'automaticallyRelist' => Configuration::get('EBAY_AUTOMATICALLY_RELIST'),
 			'sizes' => ImageType::getImagesTypes('products'),
-			'sizedefault' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_DEFAULT'),
+			'sizedefault' => $sizedefault,
 			'sizebig' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_BIG'),
 			'sizesmall' => (int)$this->ebay_profile->getConfiguration('EBAY_PICTURE_SIZE_SMALL'),
 			'sync_products_by_cron' => Configuration::get('EBAY_SYNC_PRODUCTS_BY_CRON'),
