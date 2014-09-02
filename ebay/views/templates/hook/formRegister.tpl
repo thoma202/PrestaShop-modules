@@ -53,17 +53,46 @@
 	}
 	</style>
 	<script>
+        {/literal}
+        var ebay_profiles = [
+        {foreach from=$ebay_profiles item='profile'}
+          {literal}{identifier: {/literal}"{$profile.ebay_user_identifier}", country: "{$profile.site_extension}"{literal}}{/literal}{if not $smarty.foreach.foo.last},{/if}
+        {/foreach}
+        ];
+        {literal}
+    
 		$(document).ready(function() {
-			$('#ebayRegisterButton').click(function() {
+			$('#ebayRegisterButton').click(function(event) {
 				if ($('#eBayUsername').val() == '')
 				{
 					alert("{/literal}{l s='Please enter your eBay user ID' mod='ebay'}{literal}");
 					return false;
 				}
 				else{
-
+                    
 					var country = $("#ebay_countries").val();
 					var link = $("option[value=" + country + "]").data("signin");
+                    
+                    var username = $('#eBayUsernamesList').val();
+                    if (username == -1)
+                        username = $('#eBayUsername').val();
+                    
+                        console.log(ebay_profiles);
+                        
+                    var exists = false;
+                    for (var i in ebay_profiles) {
+                        var ebay_profile = ebay_profiles[i];
+                        if ((country == ebay_profile.country) &&
+                        (username == ebay_profile.identifier)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    
+                    if (exists) {
+                        alert("{/literal}{l s='An account with this identifier and this eBay site already exists' mod='ebay'}{literal}");
+                        return false;
+                    }
                     
                     window.open(link + "{/literal}{$window_open_url|escape:'urlencode'}{literal}");
 				}

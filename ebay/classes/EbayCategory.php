@@ -31,16 +31,21 @@ class EbayCategory
 	private $id_category_ref; /* eBay Category id */
     private $id_country; /* eBay Site id. naming is not great */
 	private $is_multi_sku;
+    
+    private $ebay_profile;
 
 	private $percent;
 
 	private $items_specific_values;
 	private $conditions_values;
 
-	public function __construct($ebay_site_id, $id_category_ref, $id_category = null)
+	public function __construct($ebay_profile, $id_category_ref, $id_category = null)
 	{
-		if ($ebay_site_id)
-			$this->id_country = (int)$ebay_site_id;        
+		if ($ebay_profile)
+        {
+			$this->ebay_profile = $ebay_profile;
+            $this->id_country = (int)$ebay_profile->ebay_site_id;
+        }
 		if ($id_category_ref)
 			$this->id_category_ref = (int)$id_category_ref;
 		if ($id_category)
@@ -52,6 +57,7 @@ class EbayCategory
 		$sql = 'SELECT ecc.`id_category`, ec.`id_category_ref`, ec.`is_multi_sku`, ecc.`percent` FROM `'._DB_PREFIX_.'ebay_category` ec
 			LEFT JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
 			ON (ecc.`id_ebay_category` = ec.`id_ebay_category`)
+            AND ecc.`id_ebay_profile` = '.(int)$this->ebay_profile->id.'
 			WHERE ec.`id_country` = '.(int)$this->id_country.' AND ';
 
 		if ($this->id_category_ref)
@@ -207,18 +213,6 @@ class EbayCategory
 
 		return $this->conditions_values[$id_ebay_profile];
 	}
-
-    /*
-	public static function getEbayCategoryByCategoryIdAndEbaySiteId($id_category, $ebay_site_id)
-	{
-		return Db::getInstance()->getRow('SELECT ec.`id_category_ref`, ec.`is_multi_sku`, ecc.`percent`
-			FROM `'._DB_PREFIX_.'ebay_category` ec
-			LEFT JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
-			ON (ecc.`id_ebay_category` = ec.`id_ebay_category`)
-			WHERE ec.`id_country` = '.(int)$ebay_site_id.' AND 
-            ecc.`id_category` = '.(int)$id_category);
-	}
-    */
 
 	public static function insertCategories($ebay_site_id, $categories, $categories_multi_sku)
 	{

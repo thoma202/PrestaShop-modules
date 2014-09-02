@@ -1269,20 +1269,9 @@ class Ebay extends Module
 
 				$this->context->cookie->eBayUsername = $ebay_username;
                 
-//                $ebay_country_spec = EbayCountrySpec::getInstanceByKey(Tools::getValue('ebay_country'));
-
-                
                 $this->ebay_profile = EbayProfile::getByLangShopSiteAndUsername((int)Tools::getValue('ebay_language'), $id_shop, Tools::getValue('ebay_country'), $ebay_username, $this->_getProductTemplateContent());
                 EbayProfile::setProfile($this->ebay_profile->id);
                 
-//				Configuration::updateValue('EBAY_API_USERNAME', $ebay_username, false, 0, 0);
-
-//				$this->ebay_profile->ebay_user_identifier = $ebay_username;
-//                $this->ebay_profile->id_lang = (int)Tools::getValue('ebay_language');
-
-//                $this->ebay_profile->ebay_site_id = $ebay_country_spec->getSiteID();
-//				$this->ebay_profile->save();
-//				$this->ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', Tools::getValue('ebay_country'));
 			}
 
 			$smarty_vars['check_token_tpl'] = $this->_displayCheckToken();
@@ -1296,6 +1285,10 @@ class Ebay extends Module
 				Configuration::updateValue('EBAY_API_SESSION', $session_id, false, 0, 0);
 				$this->context->cookie->write();
 			}
+            
+            $ebay_profiles = EbayProfile::getProfilesByIdShop($this->ebay_profile->id_shop);
+            foreach ($ebay_profiles as &$profile)
+                $profile['site_extension'] = EbayCountrySpec::getSiteExtensionBySiteId($profile['ebay_site_id']);
 
 			$smarty_vars = array_merge($smarty_vars, array(
 				'action_url' => $_SERVER['REQUEST_URI'].'&action=logged',
@@ -1304,6 +1297,7 @@ class Ebay extends Module
 				'ebay_countries' => EbayCountrySpec::getCountries($ebay->getDev()),
 				'default_country' => EbayCountrySpec::getKeyForEbayCountry(),
                 'ebay_user_identifiers' => EbayProfile::getEbayUserIdentifiers(),
+                'ebay_profiles' => $ebay_profiles,
                 'languages' => Language::getLanguages(true, ($this->ebay_profile ? $this->ebay_profile->id_shop : $id_shop)) 
 			));
 
@@ -1646,7 +1640,7 @@ class Ebay extends Module
 				'token' => Tools::getValue('token'),
 				'tab_module' => Tools::getValue('tab_module'),
 				'module_name' => Tools::getValue('module_name'),
-				'form_categories' => EbaySynchronizer::getNbSynchronizableEbayCategorie()
+				'form_categories' => EbaySynchronizer::getNbSynchronizableEbayCategorie($this->ebay_profile->id)
 			));
 
 			return $this->display(dirname(__FILE__), '/views/templates/hook/pre_form_categories.tpl');
@@ -1680,7 +1674,7 @@ class Ebay extends Module
 			'tab_module' => Tools::getValue('tab_module'),
 			'module_name' => Tools::getValue('module_name'),
 			'date' => pSQL(date('Ymdhis')),
-			'form_categories' => EbaySynchronizer::getNbSynchronizableEbayCategorie(),
+			'form_categories' => EbaySynchronizer::getNbSynchronizableEbayCategorie($this->ebay_profile->id),
 			'nb_categorie' => count(Category::getCategories($this->context->cookie->id_lang, true, false))
 		);
 
@@ -2150,6 +2144,7 @@ class Ebay extends Module
 							SELECT  `id_category`
 							FROM  `'._DB_PREFIX_.'ebay_category_configuration`
 							WHERE  `id_ebay_category` > 0
+                            AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.'
 						)
 						'.$this->addSqlRestrictionOnLang('s').'
 						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
@@ -2173,7 +2168,9 @@ class Ebay extends Module
 						IN (
 							SELECT  `id_category`
 							FROM  `'._DB_PREFIX_.'ebay_category_configuration`
-							WHERE  `id_ebay_category` > 0 AND `sync` = 1
+							WHERE  `id_ebay_category` > 0 
+                            AND `sync` = 1
+                            AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.'
 						)'.$this->addSqlRestrictionOnLang('s').'
 						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
 						GROUP BY p.id_product
@@ -2194,7 +2191,8 @@ class Ebay extends Module
 				AND p.`id_category_default` IN (
 					SELECT `id_category`
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
-					WHERE `id_ebay_category` > 0)
+					WHERE `id_ebay_category` > 0
+                    AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.')
 				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
 			$nb_products_mode_a = Db::getInstance()->getValue($sql);
 
@@ -2210,7 +2208,8 @@ class Ebay extends Module
 					SELECT `id_category`
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
 					WHERE `id_ebay_category` > 0
-					AND `sync` = 1)
+					AND `sync` = 1
+                    AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.')
 				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
 			$nb_products_mode_b = Db::getInstance()->getValue($sql);
 		}

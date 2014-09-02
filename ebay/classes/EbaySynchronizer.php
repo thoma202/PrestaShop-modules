@@ -69,7 +69,7 @@ class EbaySynchronizer
 
             $ebay_profile = new EbayProfile((int)$p['id_ebay_profile']);
 
-			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile->ebay_site_id);
+			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile);
 			    
 
 			$variations = EbaySynchronizer::_loadVariations($product, $ebay_profile, $context, $ebay_category);
@@ -384,10 +384,10 @@ class EbaySynchronizer
 	 * Returns the eBay category object. Check if that has been loaded before
 	 *
 	 **/
-	public static function _getEbayCategory($category_id, $ebay_site_id)
+	public static function _getEbayCategory($category_id, $ebay_profile)
 	{
 		if (!isset(EbaySynchronizer::$ebay_categories[$category_id]))
-			EbaySynchronizer::$ebay_categories[$category_id] = new EbayCategory($ebay_site_id, null, $category_id);
+			EbaySynchronizer::$ebay_categories[$category_id] = new EbayCategory($ebay_profile, null, $category_id);
 
 		return EbaySynchronizer::$ebay_categories[$category_id];
 	}
@@ -549,7 +549,7 @@ class EbaySynchronizer
 		if ($product_id)
 		{
 			$product = new Product((int)$product_id, true, $id_lang);
-			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile->ebay_site_id);
+			$ebay_category = EbaySynchronizer::_getEbayCategory($product->id_category_default, $ebay_profile);
 			$variations = EbaySynchronizer::_loadVariations($product, $ebay_profile, $context, $ebay_category);
 
 			//case where the product is multisku and could have been sent a several products
@@ -765,7 +765,8 @@ class EbaySynchronizer
 							SELECT  `id_category`
 							FROM  `'._DB_PREFIX_.'ebay_category_configuration`
 							WHERE  `id_ebay_category` > 0
-							AND `id_ebay_category` > 0'.
+							AND `id_ebay_category` > 0
+                            AND `id_ebay_profile` = '.(int)$ebay_profile->id.
 							($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').
 						')
 						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')'.
@@ -789,7 +790,8 @@ class EbaySynchronizer
 					SELECT `id_category`
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
 					WHERE `id_category` > 0
-					AND `id_ebay_category` > 0'.
+					AND `id_ebay_category` > 0
+                    AND `id_ebay_profile` = '.(int)$ebay_profile->id.                    
 					($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').'
 				)
 				AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
@@ -843,7 +845,7 @@ class EbaySynchronizer
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
 					WHERE `id_category` > 0
 					AND `id_ebay_category` > 0
-					AND  `id_ebay_profile` = '.(int)$ebay_profile->id.                    
+					AND `id_ebay_profile` = '.(int)$ebay_profile->id.                    
 					($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').'
 				)
 				'.($option == 1 ? EbaySynchronizer::_addSqlCheckProductInexistence('p') : '').'
@@ -907,7 +909,7 @@ class EbaySynchronizer
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
 					WHERE `id_category` > 0
 					AND `id_ebay_category` > 0
-                    AND  `id_ebay_profile` = '.(int)$ebay_profile->id.                    
+                    AND `id_ebay_profile` = '.(int)$ebay_profile->id.                    
 					($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').'
 				)
 				'.(Tools::getValue('option') == 1 ? EbaySynchronizer::_addSqlCheckProductInexistence('p') : '').'
@@ -1118,13 +1120,14 @@ class EbaySynchronizer
 		return str_replace($tags, $values, $description);
 	}
 
-	public static function getNbSynchronizableEbayCategorie()
+	public static function getNbSynchronizableEbayCategorie($id_ebay_profile)
 	{
 		return Db::getInstance()->getValue('
 			SELECT COUNT(*)
 			FROM  `'._DB_PREFIX_.'ebay_category_configuration`
 			WHERE  `id_ebay_category` > 0
-			AND `id_ebay_category` > 0'
+			AND `id_ebay_category` > 0
+            AND `id_ebay_profile` = '.(int)$id_ebay_profile
 		);
 	}
 
