@@ -140,7 +140,7 @@
                                         <th>{l s='eBay Site' mod='ebay'}</th>
                                         <th>{l s='Prestashop Shop' mod='ebay'}</th>
                                         <th class="center">{l s='Language' mod='ebay'}</th>
-                                        <th class="center">{l s='Nb Products Synced' mod='ebay'}</th>
+                                        <th class="center">{l s='Nb Current Listings' mod='ebay'}</th>
                                         <th class="center">{l s='Action' mod='ebay'}</th>
                                         <th class="center">{l s='Delete Profile' mod='ebay'}</th>
                                     </tr>

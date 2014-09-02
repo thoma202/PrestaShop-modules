@@ -176,6 +176,9 @@ class EbaySynchronizer
 	 **/
 	private static function _exportProductToEbay($product, $data, $id_ebay_profile, $ebay_category, $ebay, $date, $context, $id_lang)
 	{
+        
+        $ebay_profile = new EbayProfile($id_ebay_profile);
+        
 		if (count($data['variations']))
 		{
 			// the product is multivariation
@@ -185,7 +188,7 @@ class EbaySynchronizer
 				$data['item_specifics'] = EbaySynchronizer::_getProductItemSpecifics($ebay_category, $product, $id_lang);
 				$data['description'] = EbaySynchronizer::_getMultiSkuItemDescription($data);
 
-				if ($item_id = EbayProduct::getIdProductRefByIdProduct($product->id)) //if product already exists on eBay
+				if ($item_id = EbayProduct::getIdProductRef($product->id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id)) //if product already exists on eBay
 				{
 					$data['itemID'] = $item_id;
 					if (!EbaySynchronizer::_hasVariationProducts($data['variations']))
@@ -206,7 +209,7 @@ class EbaySynchronizer
 					$data_variation = EbaySynchronizer::_getVariationData($data, $variation);
 
 					// Check if product exists on eBay
-					if ($itemID = EbayProduct::getIdProductRefByIdProduct($product->id, $data_variation['id_attribute']))
+					if ($itemID = EbayProduct::getIdProductRef($product->id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id, $data_variation['id_attribute']))
 					{
 						$data_variation['itemID'] = $itemID;
 
@@ -227,7 +230,7 @@ class EbaySynchronizer
 			$data['description'] = EbaySynchronizer::_getItemDescription($data);
 
 			// Check if product exists on eBay
-			if ($itemID = EbayProduct::getIdProductRefByIdProduct($product->id))
+			if ($itemID = EbayProduct::getIdProductRef($product->id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id))
 			{
 				$data['itemID'] = $itemID;
 
@@ -550,7 +553,7 @@ class EbaySynchronizer
 			//case where the product is multisku and could have been sent a several products
 			if (count($variations) && !EbaySynchronizer::_isProductMultiSku($ebay_category, $product->id, $id_lang))
 				foreach ($variations as $variation)
-					if ($itemID = EbayProduct::getIdProductRefByIdProduct($product->id, $variation['id_attribute']))
+					if ($itemID = EbayProduct::getIdProductRef($product->id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id, $variation['id_attribute']))
 					{
 						$ebay->endFixedPriceItem($itemID);
 						EbayProduct::deleteByIdProductRef($itemID);
@@ -560,7 +563,7 @@ class EbaySynchronizer
 		}
 
 		if (!$ebay_item_id && $product_id)
-			$ebay_item_id = EbayProduct::getIdProductRefByIdProduct($product_id);
+			$ebay_item_id = EbayProduct::getIdProductRef($product_id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id);
 
 		if ($ebay_item_id)
 		{

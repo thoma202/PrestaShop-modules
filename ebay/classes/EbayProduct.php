@@ -27,14 +27,18 @@
 
 class EbayProduct
 {
-	public static function getIdProductRefByIdProduct($id_product, $id_attribute = null)
+	public static function getIdProductRef($id_product, $ebay_identifier, $ebay_site_id, $id_attribute = null)
 	{
 		$query = 'SELECT `id_product_ref`
-			FROM `'._DB_PREFIX_.'ebay_product`
-			WHERE `id_product` = '.(int)$id_product;
+			FROM `'._DB_PREFIX_.'ebay_product` ep
+            INNER JOIN `'._DB_PREFIX_.'ebay_profile` ep1
+            ON ep.`id_ebay_profile` = ep1.`id_ebay_profile`
+            AND ep1.`ebay_user_identifier` = \''.pSQL($ebay_identifier).'\'
+            AND ep1.`ebay_site_id` = '.(int)$ebay_site_id.'
+			WHERE ep.`id_product` = '.(int)$id_product;
 		
 		if ($id_attribute)
-			$query .= ' AND `id_attribute` = '.(int)$id_attribute;
+			$query .= ' AND ep.`id_attribute` = '.(int)$id_attribute;
 
 		return Db::getInstance()->getValue($query);
 	}
@@ -145,7 +149,17 @@ class EbayProduct
 
 	public static function getEbayUrl($reference, $mode_dev = false)
 	{
-		return 'http://cgi'.($mode_dev ? '.sandbox' : '').'.ebay.fr/ws/eBayISAPI.dll?ViewItem&item='.$reference.'&ssPageName=STRK:MESELX:IT&_trksid=p3984.m1555.l2649#ht_632wt_902';
+        $ebay_site_id = Db::getInstance()->getValue('SELECT ep.`ebay_site_id`
+            FROM `'._DB_PREFIX_.'ebay_profile` ep
+            INNER JOIN `'._DB_PREFIX_.'ebay_product` ep1
+            ON ep.`id_ebay_profile` = ep1.`id_ebay_profile`
+            AND ep1.`id_product_ref` = \''.pSQL($reference).'\'');
+        if (!$ebay_site_id)
+            return '';
+        
+        $site_extension = EbayCountrySpec::getSiteExtensionBySiteId($ebay_site_id);
+        
+		return 'http://cgi'.($mode_dev ? '.sandbox' : '').'.ebay.'.$site_extension.'/ws/eBayISAPI.dll?ViewItem&item='.$reference.'&ssPageName=STRK:MESELX:IT&_trksid=p3984.m1555.l2649#ht_632wt_902';
 	}
     
 }
