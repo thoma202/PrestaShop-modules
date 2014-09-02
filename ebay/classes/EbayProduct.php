@@ -83,14 +83,16 @@ class EbayProduct
 			WHERE `id_ebay_profile` = '.(int)$id_ebay_profile);
 	}
     
-	public static function getNbProductsByIdEbayProfile($id_ebay_profiles = array())
+	public static function getNbProductsByIdEbayProfiles($id_ebay_profiles = array())
 	{
         $query = 'SELECT `id_ebay_profile`, count(*) AS `nb`
 			FROM `'._DB_PREFIX_.'ebay_product`';
         if ($id_ebay_profiles)
-            $query .= ' WHERE `id_ebay_profile` IN ('.implode(',', $id_ebay_profiles).')';
+            $query .= ' WHERE `id_ebay_profile` IN ('.implode(',', $id_ebay_profiles).')
+                GROUP BY `id_ebay_profile`';
         
 		$res = Db::getInstance()->executeS($query);
+        
         $ret = array();
         foreach ($res as $row)
             $ret[$row['id_ebay_profile']] = $row['nb'];

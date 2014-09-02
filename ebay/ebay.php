@@ -1161,7 +1161,7 @@ class Ebay extends Module
             'current_profile' => $this->ebay_profile,
             'current_profile_site_extension' => ($this->ebay_profile ? EbayCountrySpec::getSiteExtensionBySiteId($this->ebay_profile->ebay_site_id) : ''),
             'profiles' => $profiles,
-            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles),
+            'nb_products' => EbayProduct::getNbProductsByIdEbayProfiles($id_ebay_profiles),
             'add_profile' => $add_profile,
             'add_profile_url' => $add_profile_url,
             'delete_profile_url' => _MODULE_DIR_.'ebay/ajax/deleteProfile.php?token='.Configuration::get('EBAY_SECURITY_TOKEN').'&time='.pSQL(date('Ymdhis'))
@@ -1367,10 +1367,7 @@ class Ebay extends Module
 			'orders_history' => $this->_displayOrdersHistory(),
 			'help' => $this->_displayHelp(),
 			'id_tab' => Tools::getValue('id_tab'),
-			'ebay_listings' => $this->_displayEbayListings(),
-//            'id_ebay_profile' => $this->ebay_profile->id,
-            //'profiles' => $profiles,
-//            'nb_products' => EbayProduct::getNbProductsByIdEbayProfile($id_ebay_profiles)
+			'ebay_listings' => $this->_displayEbayListings()
 		);
 
 		$this->smarty->assign($smarty_vars);
