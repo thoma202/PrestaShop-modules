@@ -53,16 +53,6 @@
 	}
 	</style>
 	<script>
-        {/literal}
-        {if $ebay_user_identifiers|count}
-            var identifiersToken = {
-                {foreach from=$ebay_user_identifiers item='profile'}
-                    "{$profile.identifier|escape:'htmlall'}": {if isset($profile.token)}true{else}false{/if}{if not $smarty.foreach.foo.last},{/if}
-                {/foreach}
-            };  
-        {/if}
-        {literal}
-    
 		$(document).ready(function() {
 			$('#ebayRegisterButton').click(function() {
 				if ($('#eBayUsername').val() == '')
@@ -75,11 +65,7 @@
 					var country = $("#ebay_countries").val();
 					var link = $("option[value=" + country + "]").data("signin");
                     
-                    var usernamesVal = $('#eBayUsernamesList').val();
-                    
-                    // no existing identifier + token
-                    if ((usernamesVal == undefined) || (usernamesVal == -1) || !identifiersToken[usernamesVal])
-                        window.open(link + "{/literal}{$window_open_url|escape:'urlencode'}{literal}");
+                    window.open(link + "{/literal}{$window_open_url|escape:'urlencode'}{literal}");
 				}
 			});
 		});
