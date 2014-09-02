@@ -95,7 +95,7 @@ class Ebay extends Module
 	{
 		$this->name = 'ebay';
 		$this->tab = 'market_place';
-		$this->version = '1.8-Dev3';
+		$this->version = '1.8-Dev4';
 		$this->stats_version = '1.0';
 
 		$this->author = 'PrestaShop';
@@ -1394,7 +1394,7 @@ class Ebay extends Module
 			$url_vars['tab'] = Tools::getValue('tab');
 
 		$url = $this->_getUrl($url_vars);
-		$ebay_identifier = Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier).'" '.((Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier) != '') ? ' readonly="readonly"' : '');
+		$ebay_identifier = Tools::getValue('ebay_identifier', $this->ebay_profile->ebay_user_identifier).'';
 		$ebayShop = $this->ebay_profile->getConfiguration('EBAY_SHOP') ? $this->ebay_profile->getConfiguration('EBAY_SHOP') : $this->StoreName;
 		$ebayShopValue = Tools::getValue('ebay_shop', $ebayShop);
 		$createShopUrl = 'http://cgi3.ebay.'.$this->ebay_country->getSiteExtension().'/ws/eBayISAPI.dll?CreateProductSubscription&&productId=3&guest=1';
