@@ -2784,7 +2784,7 @@ class Ebay extends Module
 
 				$data['reference'] = $combinaison['reference'];
 				$data['ean13'] = $combinaison['ean13'];
-				$variation_specifics = EbaySynchronizer::_getVariationSpecifics($combinaison['id_product'], $combinaison['id_product_attribute'], $id_lang);
+				$variation_specifics = EbaySynchronizer::_getVariationSpecifics($combinaison['id_product'], $combinaison['id_product_attribute'], $id_lang, $this->ebay_profile->ebay_site_id);
 				foreach ($variation_specifics as $variation_specific)
 					$data['name'] .= ' '.$variation_specific;
 

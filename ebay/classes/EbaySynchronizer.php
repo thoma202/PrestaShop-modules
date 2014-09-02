@@ -182,7 +182,7 @@ class EbaySynchronizer
 		if (count($data['variations']))
 		{
 			// the product is multivariation
-			if (EbaySynchronizer::_isProductMultiSku($ebay_category, $product->id, $id_lang))
+			if (EbaySynchronizer::_isProductMultiSku($ebay_category, $product->id, $id_lang, $ebay_profile->ebay_site_id))
 			{
 				// the category accepts multisku products and there is variables matching
 				$data['item_specifics'] = EbaySynchronizer::_getProductItemSpecifics($ebay_category, $product, $id_lang);
@@ -252,9 +252,9 @@ class EbaySynchronizer
 	 * (this doesn't test if the product has variations)
 	 *
 	 */
-	public static function _isProductMultiSku($ebay_category, $product_id, $id_lang)
+	public static function _isProductMultiSku($ebay_category, $product_id, $id_lang, $ebay_site_id)
 	{
-		return $ebay_category->isMultiSku() && EbaySynchronizer::_hasVariationsMatching($product_id, $id_lang, $ebay_category);
+		return $ebay_category->isMultiSku() && EbaySynchronizer::_hasVariationsMatching($product_id, $id_lang, $ebay_category, $ebay_site_id);
 	}
 
 	private static function _hasVariationProducts($variations)
@@ -411,7 +411,7 @@ class EbaySynchronizer
 				'ean13' => $combinaison['ean13'],
 				'quantity' => $combinaison['quantity'],
 				'price_static' => $price,
-				'variation_specifics' => EbaySynchronizer::_getVariationSpecifics($combinaison['id_product'], $combinaison['id_product_attribute'], $context->cookie->id_lang, $ebay_category),
+				'variation_specifics' => EbaySynchronizer::_getVariationSpecifics($combinaison['id_product'], $combinaison['id_product_attribute'], $context->cookie->id_lang, $ebay_profile->ebay_site_id, $ebay_category),
 				'variations' => array(
 					array(
 						'name' => $combinaison['group_name'],
@@ -460,7 +460,7 @@ class EbaySynchronizer
 		return $row['id_attribute_group'];
 	}
 
-	private static function _hasVariationsMatching($product_id, $id_lang, $ebay_category)
+	private static function _hasVariationsMatching($product_id, $id_lang, $ebay_category, $ebay_site_id)
 	{
 		$product = new Product($product_id);
 		$attribute_groups = $product->getAttributesGroups($id_lang);
@@ -470,6 +470,7 @@ class EbaySynchronizer
 		$nb_no_variation_attribute_groups = Db::getInstance()->getValue('SELECT COUNT(*)
 			FROM `'._DB_PREFIX_.'ebay_category_specific`
 			WHERE `can_variation` = 0
+            AND `ebay_site_id` = '.(int)$ebay_site_id.'
 			AND `id_attribute_group` IN ('.implode(', ', $attribute_group_ids).')');
 
 		if ($nb_no_variation_attribute_groups)
@@ -478,7 +479,8 @@ class EbaySynchronizer
 		// test if all the attribute_groups without matching are not conflicting with an item_specific name
 		$category_specifics = Db::getInstance()->executeS('SELECT `id_attribute_group`
 			FROM `'._DB_PREFIX_.'ebay_category_specific`
-			WHERE `id_attribute_group` IN ('.implode(', ', $attribute_group_ids).')');
+			WHERE `id_attribute_group` IN ('.implode(', ', $attribute_group_ids).')
+            AND `ebay_site_id` = '.(int)$ebay_site_id);
 
 		$with_settings_attribute_group_ids = array_map(array('EbaySynchronizer','getIdAttributeGroup'), $category_specifics);
 		$without_settings_attribute_group_ids = array_diff($attribute_group_ids, $with_settings_attribute_group_ids);
@@ -551,7 +553,7 @@ class EbaySynchronizer
 			$variations = EbaySynchronizer::_loadVariations($product, $ebay_profile, $context, $ebay_category);
 
 			//case where the product is multisku and could have been sent a several products
-			if (count($variations) && !EbaySynchronizer::_isProductMultiSku($ebay_category, $product->id, $id_lang))
+			if (count($variations) && !EbaySynchronizer::_isProductMultiSku($ebay_category, $product->id, $id_lang, $ebay_profile->ebay_site_id))
 				foreach ($variations as $variation)
 					if ($itemID = EbayProduct::getIdProductRef($product->id, $ebay_profile->ebay_user_identifier, $ebay_profile->ebay_site_id, $variation['id_attribute']))
 					{
@@ -1004,7 +1006,7 @@ class EbaySynchronizer
 	 * Returns the item specifics that correspond to a variation and not to the product in general
 	 *
 	 **/
-	public static function _getVariationSpecifics($product_id, $product_attribute_id, $id_lang, $ebay_category = false)
+	public static function _getVariationSpecifics($product_id, $product_attribute_id, $id_lang, $ebay_site_id, $ebay_category = false)
 	{
 		$variation_specifics_pairs = array();
 
@@ -1019,6 +1021,7 @@ class EbaySynchronizer
 			AND agl.id_lang = '.(int)$id_lang.'
 			LEFT JOIN '._DB_PREFIX_.'ebay_category_specific ecs
 			ON a.id_attribute_group = ecs.id_attribute_group
+            AND ecs.`ebay_site_id` = '.(int)$ebay_site_id.'
 			WHERE pac.id_product_attribute='.(int)$product_attribute_id;
 
 		if($ebay_category !== false)

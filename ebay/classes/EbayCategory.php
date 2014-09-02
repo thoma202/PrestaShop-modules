@@ -110,7 +110,8 @@ class EbayCategory
 	{
 		$sql = 'SELECT e.`name`, e.`id_ebay_category_specific` as id, e.`required`, e.`selection_mode`, e.`id_attribute_group`, e.`id_feature`, e.`id_ebay_category_specific_value` as id_specific_value, e.`is_brand`, e.`can_variation`
 			FROM `'._DB_PREFIX_.'ebay_category_specific` e
-			WHERE e.`id_category_ref` = '.(int)$this->id_category_ref;
+			WHERE e.`id_category_ref` = '.(int)$this->id_category_ref.'
+            AND e.`ebay_site_id` = '.(int)$this->id_country;
 
 		return DB::getInstance()->executeS($sql);
 	}
@@ -131,7 +132,8 @@ class EbayCategory
 				FROM `'._DB_PREFIX_.'ebay_category_specific` e
 				LEFT JOIN `'._DB_PREFIX_.'ebay_category_specific_value` ec
 				ON e.`id_ebay_category_specific_value` = ec.`id_ebay_category_specific_value`
-				WHERE e.`id_category_ref` = '.(int)$this->id_category_ref;
+				WHERE e.`id_category_ref` = '.(int)$this->id_category_ref.'
+                AND e.`ebay_site_id` = '.(int)$this->id_country;
 
 			$this->items_specific_values = Db::getInstance()->executeS($sql);
 		}
@@ -151,8 +153,9 @@ class EbayCategory
 			LEFT JOIN `'._DB_PREFIX_.'ebay_category_condition_configuration` ec
 			ON e.`id_category_ref` = ec.`id_category_ref`
 			AND e.`id_condition_ref` = ec.`id_condition_ref`
-			AND ec.`id_ebay_profile` = '.(int)$id_ebay_profile.'            
-			WHERE e.`id_category_ref` = '.(int)$this->id_category_ref;
+			AND e.`id_ebay_profile` = ec.`id_ebay_profile`
+			WHERE e.`id_category_ref` = '.(int)$this->id_category_ref.'
+            AND e.`id_ebay_profile` = '.(int)$id_ebay_profile;
 
 		$res = Db::getInstance()->executeS($sql);
 

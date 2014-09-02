@@ -57,6 +57,7 @@ class EbayCategorySpecific
 	{
 		$request = new EbayRequest($id_ebay_profile);
 		$ebay_category_ids = EbayCategoryConfiguration::getEbayCategoryIds($id_ebay_profile);
+        $ebay_profile = new EbayProfile($id_ebay_profile);
 
 		foreach ($ebay_category_ids as $ebay_category_id)
 		{
@@ -90,8 +91,8 @@ class EbayCategorySpecific
 							$values[] = (string)$value_recommendation->Value;
 
 					$db = Db::getInstance();
-					$db->execute('INSERT INTO `'._DB_PREFIX_.'ebay_category_specific` (`id_category_ref`, `name`, `required`, `can_variation`, `selection_mode`)
-						VALUES ('. (int)$ebay_category_id.', \''.pSQL((string)$recommendation->Name).'\', '.($required ? 1 : 0).', '.($can_variation ? 1 : 0).', '.($selection_mode ? 1 : 0).')
+					$db->execute('INSERT INTO `'._DB_PREFIX_.'ebay_category_specific` (`id_category_ref`, `name`, `required`, `can_variation`, `selection_mode`, `ebay_site_id`)
+						VALUES ('. (int)$ebay_category_id.', \''.pSQL((string)$recommendation->Name).'\', '.($required ? 1 : 0).', '.($can_variation ? 1 : 0).', '.($selection_mode ? 1 : 0).', '.(int)$ebay_profile->ebay_site_id.')
 						ON DUPLICATE KEY UPDATE `required` = '.($required ? 1 : 0).', `can_variation` = '.($can_variation ? 1 : 0).', `selection_mode` = '.($selection_mode ? 1 : 0));
 
 					$ebay_category_specific_id = $db->Insert_ID();
@@ -100,6 +101,7 @@ class EbayCategorySpecific
 						$ebay_category_specific_id = $db->getValue('SELECT `id_ebay_category_specific`
 							FROM `'._DB_PREFIX_.'ebay_category_specific`
 							WHERE `id_category_ref` = '.(int)$ebay_category_id.'
+                            AND `ebay_site_id` = '.(int)$ebay_profile->ebay_site_id.'
 							AND `name` = \''.pSQL((string)$recommendation->Name).'\'');
 
 					$insert_data = array();
@@ -153,6 +155,7 @@ class EbayCategorySpecific
 			SELECT * FROM '._DB_PREFIX_.'ebay_category_specific ecs	
 			INNER JOIN '._DB_PREFIX_.'ebay_category ec 
             ON ecs.id_category_ref = ec.id_category_ref 
+            AND ecs.`ebay_site_id` = ec.`id_country`
             AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
 			INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
@@ -167,6 +170,7 @@ class EbayCategorySpecific
 			SELECT * FROM '._DB_PREFIX_.'ebay_category_specific ecs	
 			INNER JOIN '._DB_PREFIX_.'ebay_category ec 
             ON ecs.id_category_ref = ec.id_category_ref
+            AND ecs.`ebay_site_id` = ec.`id_country`
             AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
 			INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
@@ -181,6 +185,7 @@ class EbayCategorySpecific
             FROM `'._DB_PREFIX_.'ebay_category_specific` ecs
             INNER JOIN `'._DB_PREFIX_.'ebay_category` ec
             ON ecs.`id_category_ref` = ec.`id_category_ref`
+            AND ecs.`ebay_site_id` = ec.`id_country`
             AND ec.`id_country` = '.(int)$ebay_profile->ebay_site_id.'
             INNER JOIN `'._DB_PREFIX_.'ebay_category_configuration` ecc
             ON ec.`id_ebay_category` = ecc.`id_ebay_category`
