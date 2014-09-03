@@ -1178,7 +1178,7 @@ class Ebay extends Module
 		
 		if ($ebay_send_stats === false)
 			$template = $this->_displayFormStats();
-        elseif (!($this->ebay_profile && $this->ebay_profile->getToken()) || $add_profile)
+        elseif (!($this->ebay_profile && $this->ebay_profile->getToken()) || $add_profile || Tools::isSubmit('ebayRegisterButton'))
 			$template = $this->_displayFormRegister();
 		else
 			$template = $this->_displayFormConfig();			
