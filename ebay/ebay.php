@@ -1113,9 +1113,13 @@ class Ebay extends Module
         $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
         $profiles = EbayProfile::getProfilesByIdShop($id_shop);
         $id_ebay_profiles = array();
+        $nb_products = EbayProduct::getNbProductsByIdEbayProfiles($id_ebay_profiles);
         foreach($profiles as &$profile) {
-            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);            
-            $id_ebay_profiles[] = $profile['id_ebay_profile'];
+            $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);
+
+            $id_ebay_profile = $profile['id_ebay_profile'];
+            $profile['nb_products'] = (isset($nb_products[$id_ebay_profile]) ? $nb_products[$id_ebay_profile] : 0);
+            $id_ebay_profiles[] = $id_ebay_profile;
         }
         
         $add_profile = (Tools::getValue('action') == 'addProfile');
@@ -1161,7 +1165,6 @@ class Ebay extends Module
             'current_profile' => $this->ebay_profile,
             'current_profile_site_extension' => ($this->ebay_profile ? EbayCountrySpec::getSiteExtensionBySiteId($this->ebay_profile->ebay_site_id) : ''),
             'profiles' => $profiles,
-            'nb_products' => EbayProduct::getNbProductsByIdEbayProfiles($id_ebay_profiles),
             'add_profile' => $add_profile,
             'add_profile_url' => $add_profile_url,
             'delete_profile_url' => _MODULE_DIR_.'ebay/ajax/deleteProfile.php?token='.Configuration::get('EBAY_SECURITY_TOKEN').'&time='.pSQL(date('Ymdhis'))

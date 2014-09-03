@@ -153,7 +153,7 @@
                                             <td>eBay {$profile.site_name|escape:'htmlall'}</td>
                                             <td>{$profile.name|escape:'htmlall'}</td>
                                             <td align="center"><img src="../img/l/{$profile.id_lang|escape:'htmlall'}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
-                                            <td align="center">{if isset($nb_products[$profile.id_ebay_profile])}{$nb_products[$profile.id_ebay_profile]|escape:'htmlall'}{else}0{/if}</td>
+                                            <td align="center">{$profile.nb_products|escape:'htmlall'}</td>
                                             <td align="center"><img src="../img/admin/edit.gif" /></td>
                                             <td align="center"><a href class="delete-profile" data-profile="{$profile.id_ebay_profile|escape:'htmlall'}"><img src="../img/admin/delete.gif" /></a></td>     
                                         </tr>
