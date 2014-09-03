@@ -52,7 +52,6 @@ class EbaySynchronizer
 		@set_time_limit(3600);
 
 		$product_ids = array_map(array('EbaySynchronizer', 'getIdProduct'), $products);
-		$products_configuration = EbayProductConfiguration::getByProductIds($product_ids);
 
 		if(method_exists('Cache', 'clean'))
 			 Cache::clean('StockAvailable::getQuantityAvailableByProduct_*');
@@ -60,6 +59,8 @@ class EbaySynchronizer
 		foreach ($products as $p)
 		{
 			$product = new Product((int)$p['id_product'], true, $id_lang);
+            
+            $product_configuration = EbayProductConfiguration::getByProductIdAndProfile($p['id_product'], $p['id_ebay_profile']);
 
 			// make sure that product exists in the db and has a default category
 			if (!Validate::isLoadedObject($product) || !$product->id_category_default)
@@ -76,7 +77,7 @@ class EbaySynchronizer
             
             $ebay = new EbayRequest((int)$p['id_ebay_profile']);
 
-			if (!$product->active || (isset($products_configuration[$product->id]) && $products_configuration[$product->id]['blacklisted']))
+			if (!$product->active || ($product_configuration && $product_configuration['blacklisted']))
 			{ // try to stop sale on eBay
 
 				$ebay = EbaySynchronizer::endProductOnEbay($ebay, $ebay_profile, $context, $id_lang, null, $product->id);
@@ -90,7 +91,7 @@ class EbaySynchronizer
 				continue;
 			}
 
-			$pictures = EbaySynchronizer::_getPictures($product, $ebay_profile, $id_lang, $context, $products_configuration, $variations);
+			$pictures = EbaySynchronizer::_getPictures($product, $ebay_profile, $id_lang, $context, $variations);
 
 			// Load basic price
 			list($price, $price_original) = EbaySynchronizer::_getPrices($product->id, $ebay_category->getPercent());
@@ -334,7 +335,7 @@ class EbaySynchronizer
 		return $tab_error;
 	}
 
-	public static function _getPictures($product, $ebay_profile, $id_lang, $context, $products_configuration, $variations)
+	public static function _getPictures($product, $ebay_profile, $id_lang, $context, $variations)
 	{
 		$pictures = array();
 		$pictures_medium = array();
@@ -769,7 +770,7 @@ class EbaySynchronizer
                             AND `id_ebay_profile` = '.(int)$ebay_profile->id.
 							($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').
 						')
-						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')'.
+						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')'.
 							EbaySynchronizer::_addSqlRestrictionOnLang('s').'
 						GROUP BY p.id_product
 				)TableReponse';
@@ -794,7 +795,7 @@ class EbaySynchronizer
                     AND `id_ebay_profile` = '.(int)$ebay_profile->id.                    
 					($ebay_profile->getConfiguration('EBAY_SYNC_PRODUCTS_MODE') != 'A' ? ' AND `sync` = 1' : '').'
 				)
-				AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
+				AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')';
             $nb_products = Db::getInstance()->getValue($sql);
 		}
 
@@ -886,7 +887,7 @@ class EbaySynchronizer
 						')
 						'.(Tools::getValue('option') == 1 ? EbaySynchronizer::_addSqlCheckProductInexistence('p') : '').'
 						AND p.`id_product` >'.(int)$ebay_sync_last_product.'
-						AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
+						AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')
 						'.EbaySynchronizer::_addSqlRestrictionOnLang('s').'
 						GROUP BY p.id_product
 				)TableRequete';
@@ -914,7 +915,7 @@ class EbaySynchronizer
 				)
 				'.(Tools::getValue('option') == 1 ? EbaySynchronizer::_addSqlCheckProductInexistence('p') : '').'
 				AND p.`id_product` > '.(int)$ebay_sync_last_product.'
-				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
+				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')';
 		}
 
 		return Db::getInstance()->getValue($sql);

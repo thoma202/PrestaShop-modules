@@ -45,7 +45,7 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_category` (
 // Create Configuration Table in Database
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_category_configuration` (
 		  `id_ebay_category_configuration` int(16) NOT NULL AUTO_INCREMENT,
-			`id_ebay_profile` INT( 16 ) NOT NULL,
+		  `id_ebay_profile` INT( 16 ) NOT NULL,
 		  `id_country` int(16) NOT NULL,
 		  `id_ebay_category` int(16) NOT NULL,
 		  `id_category` int(16) NOT NULL,
@@ -217,9 +217,10 @@ $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_category_condition_con
 $sql[] = 'CREATE TABLE IF NOT EXISTS `'._DB_PREFIX_.'ebay_product_configuration` (
 			  `id_ebay_product_configuration` int(11) NOT NULL AUTO_INCREMENT,
 				`id_product` int(16),
+                `id_ebay_profile` INT( 16 ) NOT NULL,
 				`blacklisted` tinyint(1) NOT NULL,
 				`extra_images` int(4) NOT NULL,
-				UNIQUE(`id_product`),				
+				UNIQUE(`id_product`, `id_ebay_profile`),
 			  PRIMARY KEY (`id_ebay_product_configuration`)
 				) ENGINE=InnoDB  DEFAULT CHARSET=utf8';
 				

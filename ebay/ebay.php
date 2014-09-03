@@ -1801,7 +1801,8 @@ class Ebay extends Module
 
 			foreach ($product_ids as $product_id)
 				EbayProductConfiguration::insertOrUpdate($product_id, array(
-					'extra_images' => $all_nb_extra_images ? $all_nb_extra_images : 0
+					'extra_images' => $all_nb_extra_images ? $all_nb_extra_images : 0,
+                    'id_ebay_profile' => $this->ebay_profile->id
 				));
 		}
 
@@ -1820,9 +1821,10 @@ class Ebay extends Module
 
 			foreach ($showed_product_ids as $product_id)
 				EbayProductConfiguration::insertOrUpdate($product_id, array(
+                    'id_ebay_profile' => $this->ebay_profile->id,
 					'blacklisted' => in_array($product_id, $to_synchronize_product_ids) ? 0 : 1,
 					//'extra_images' => $extra_images[$product_id] ? $extra_images[$product_id] : 0
-					'extra_images' => 0
+					'extra_images' => 0,
 				));
 		}
 
@@ -2150,7 +2152,7 @@ class Ebay extends Module
                             AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.'
 						)
 						'.$this->addSqlRestrictionOnLang('s').'
-						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
+						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($this->ebay_profile->id).')
 						GROUP BY p.id_product
 				)TableReponse';
 			$nb_products_mode_a = Db::getInstance()->getValue($sql);
@@ -2175,7 +2177,7 @@ class Ebay extends Module
                             AND `sync` = 1
                             AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.'
 						)'.$this->addSqlRestrictionOnLang('s').'
-						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
+						AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($this->ebay_profile->id).')
 						GROUP BY p.id_product
 				)TableReponse';
 			$nb_products_mode_b = Db::getInstance()->getValue($sql);
@@ -2196,7 +2198,7 @@ class Ebay extends Module
 					FROM `'._DB_PREFIX_.'ebay_category_configuration`
 					WHERE `id_ebay_category` > 0
                     AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.')
-				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
+				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($this->ebay_profile->id).')';
 			$nb_products_mode_a = Db::getInstance()->getValue($sql);
 
 			$sql = 'SELECT COUNT(`id_product`) as nb
@@ -2213,7 +2215,7 @@ class Ebay extends Module
 					WHERE `id_ebay_category` > 0
 					AND `sync` = 1
                     AND `id_ebay_profile` = '.(int)$this->ebay_profile->id.')
-				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
+				AND p.`id_product` NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($this->ebay_profile->id).')';
 			$nb_products_mode_b = Db::getInstance()->getValue($sql);
 		}
 
@@ -2729,7 +2731,7 @@ class Ebay extends Module
 
 		// pictures product
 		$product = new Product($product['id_product'], false, $id_lang);
-		$pictures = EbaySynchronizer::_getPictures($product, $this->ebay_profile, $id_lang, $this->context, array(), array());
+		$pictures = EbaySynchronizer::_getPictures($product, $this->ebay_profile, $id_lang, $this->context, array());
 		$data['large_pictures'] = $pictures['large'];
 		$data['medium_pictures'] = $pictures['medium'];
 

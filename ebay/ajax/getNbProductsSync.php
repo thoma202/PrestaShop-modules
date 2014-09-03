@@ -56,7 +56,7 @@ if (version_compare(_PS_VERSION_, '1.5', '>'))
 			WHERE `id_ebay_category` > 0
 			AND `sync` = 1
             AND `id_ebay_profile` = '.(int)$ebay_profile->id.')
-		AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')
+		AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')
 		GROUP BY p.id_product) TableRequete';
     $nb_products = Db::getInstance()->getValue($sql);
 }
@@ -76,7 +76,7 @@ else
 			WHERE `id_ebay_category` > 0
 			AND `sync` = 1
             AND `id_ebay_profile` = '.(int)$ebay_profile->id.')
-		AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery().')';
+		AND p.id_product NOT IN ('.EbayProductConfiguration::getBlacklistedProductIdsQuery($ebay_profile->id).')';
     $nb_products = Db::getInstance()->getValue($sql);
 }
 
