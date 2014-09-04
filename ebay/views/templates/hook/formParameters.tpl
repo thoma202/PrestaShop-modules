@@ -88,6 +88,15 @@
 			<input type="text" size="20" name="ebay_shop_postalcode" value="{$shopPostalCode|escape:'htmlall'}"/>
 			<p>{l s='Your shop\'s postal code' mod='ebay'}</p>
 		</div>
+		<label>{l s='Item Country' mod='ebay'} : </label>
+		<div class="margin-form">
+			<select name="ebay_shop_country" class="ebay_select">
+			{foreach from=$ebay_shop_countries item=ebay_shop_country}
+				<option value="{$ebay_shop_country.iso_code|escape:'htmlall'}" {if $current_ebay_shop_country == $ebay_shop_country.iso_code} selected="selected"{/if}>{$ebay_shop_country.site_name|escape:'htmlall'}</option>
+			{/foreach}							   
+			</select>            
+			<p>{l s='Your shop\'s country' mod='ebay'}</p>
+		</div>        
 
 		<div class="show regenerate_token_click" style="display:block;text-align:center;cursor:pointer">
 			<span data-inlinehelp="{l s='Use only if you get a message saying that your authentication is expired.' mod='ebay'}">{l s='Click here to generate a new authentication token.' mod='ebay'}</span>
