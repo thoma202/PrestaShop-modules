@@ -91,6 +91,7 @@
 		<label>{l s='Item Country' mod='ebay'} : </label>
 		<div class="margin-form">
 			<select name="ebay_shop_country" class="ebay_select">
+                <option value=""></option>
 			{foreach from=$ebay_shop_countries item=ebay_shop_country}
 				<option value="{$ebay_shop_country.iso_code|escape:'htmlall'}" {if $current_ebay_shop_country == $ebay_shop_country.iso_code} selected="selected"{/if}>{$ebay_shop_country.site_name|escape:'htmlall'}</option>
 			{/foreach}							   
