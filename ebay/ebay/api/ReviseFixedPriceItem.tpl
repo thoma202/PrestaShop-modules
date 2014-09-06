@@ -59,7 +59,7 @@
 					<PhotoDisplay>PicturePack</PhotoDisplay>
 				{/if}				
 				{foreach from=$pictures item=picture}
-					<PictureURL>http://davidfeldmanshow.com/wp-content/uploads/2014/01/dogs-wallpaper.jpg</PictureURL>
+					<PictureURL>{$picture}</PictureURL>
 				{/foreach}
 			</PictureDetails>
 		{/if}
