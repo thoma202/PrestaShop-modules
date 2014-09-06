@@ -1113,13 +1113,14 @@ class Ebay extends Module
         $id_shop = version_compare(_PS_VERSION_, '1.5', '>') ? Shop::getContextShopID() : Shop::getCurrentShop();
         $profiles = EbayProfile::getProfilesByIdShop($id_shop);
         $id_ebay_profiles = array();
-        $nb_products = EbayProduct::getNbProductsByIdEbayProfiles($id_ebay_profiles);
         foreach($profiles as &$profile) {
             $profile['site_name'] = EbayCountrySpec::getSiteNameBySiteId($profile['ebay_site_id']);
-
-            $id_ebay_profile = $profile['id_ebay_profile'];
-            $profile['nb_products'] = (isset($nb_products[$id_ebay_profile]) ? $nb_products[$id_ebay_profile] : 0);
-            $id_ebay_profiles[] = $id_ebay_profile;
+            $id_ebay_profiles[] = $profile['id_ebay_profile'];
+        }
+        
+        $nb_products = EbayProduct::getNbProductsByIdEbayProfiles($id_ebay_profiles);
+        foreach ($profiles as &$profile) {
+            $profile['nb_products'] = (isset($nb_products[$profile['id_ebay_profile']]) ? $nb_products[$profile['id_ebay_profile']] : 0);
         }
         
         $add_profile = (Tools::getValue('action') == 'addProfile');
