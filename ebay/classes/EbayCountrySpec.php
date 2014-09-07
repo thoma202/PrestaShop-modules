@@ -373,5 +373,13 @@ class EbayCountrySpec
                 return $country['site_extension'];
         
         return null;
-    }    
+    }
+    
+    public static function getIsoCodeBySiteId($site_id) {
+        foreach(self::$country_data as $country)
+            if ($country['site_id'] == $site_id)
+                return $country['iso_code'];
+        
+        return null;
+    }        
 }

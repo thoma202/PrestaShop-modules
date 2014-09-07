@@ -34,5 +34,24 @@ function upgrade_module_1_8($module)
 			if (!Db::getInstance()->execute($request))
 				return false;
 	}
+    
+    // upgrade existing profiles
+    $profiles = EbayProfile::getProfilesByIdShop();
+    foreach ($profiles as $profile) {
+        
+        $ebay_profile = new EbayProfile($profile['id_ebay_profile']);
+
+        // set id_lang if not set
+        if (!$profile['id_lang']) {
+            $ebay_profile->id_lang = (int)(Configuration::get('PS_LANG_DEFAULT');
+            $ebay_profile->save();
+        }
+        
+        // we set EBAY_SHOP_COUNTRY
+        $ebay_shop_country = EbayCountrySpec::getIsoCodeBySiteId($ebay_profile->ebay_site_id);
+        $ebay_profile->setConfiguration('EBAY_SHOP_COUNTRY', $ebay_shop_country);
+    }
+    
+    
 	return true;
 }
