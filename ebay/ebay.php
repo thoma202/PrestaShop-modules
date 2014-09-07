@@ -194,10 +194,7 @@ class Ebay extends Module
 			}
 
 
-			// Generate warnings
-			if (!$this->ebay_profile->getToken())
-				$this->warning = $this->l('You must register your module on eBay.');
-
+			
 
 			// Warning uninstall
 			$this->confirmUninstall = $this->l('Are you sure you want to uninistall this module? All configuration settings will be lost');
