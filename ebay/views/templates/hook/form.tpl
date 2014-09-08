@@ -138,7 +138,7 @@
                                         <th>{l s='Id' mod='ebay'}</th>
                                         <th>{l s='eBay User Id' mod='ebay'}</th>
                                         <th>{l s='eBay Site' mod='ebay'}</th>
-                                        <th>{l s='Prestashop Shop' mod='ebay'}</th>
+                                        {if version_compare(_PS_VERSION_, '1.5', '>')}<th>{l s='Prestashop Shop' mod='ebay'}</th>{/if}
                                         <th class="center">{l s='Language' mod='ebay'}</th>
                                         <th class="center">{l s='Nb Current Listings' mod='ebay'}</th>
                                         <th class="center">{l s='Action' mod='ebay'}</th>
@@ -151,7 +151,7 @@
                                                 <td><form id="ebay_profile_form_{$profile.id_ebay_profile|escape:'htmlall'}" method="post"><input type="hidden" name="ebay_profile" value="{$profile.id_ebay_profile|escape:'htmlall'}" /><input type="hidden" name="action" value="logged" /></form>{$profile.id_ebay_profile|escape:'htmlall'}</td>                                                
                                             <td>{$profile.ebay_user_identifier|escape:'htmlall'}</td>
                                             <td>eBay {$profile.site_name|escape:'htmlall'}</td>
-                                            <td>{$profile.name|escape:'htmlall'}</td>
+                                            {if version_compare(_PS_VERSION_, '1.5', '>')}<td>{$profile.name|escape:'htmlall'}</td>{/if}
                                             <td align="center"><img src="../img/l/{$profile.id_lang|escape:'htmlall'}.jpg" alt="{$profile.language_name|escape:'htmlall'}" title="{$profile.language_name|escape:'htmlall'}"></td>
                                             <td align="center">{$profile.nb_products|escape:'htmlall'}</td>
                                             <td align="center"><img src="../img/admin/edit.gif" /></td>

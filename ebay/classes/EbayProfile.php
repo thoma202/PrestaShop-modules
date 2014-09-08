@@ -406,10 +406,11 @@ class EbayProfile extends ObjectModel
     
 	public static function getProfilesByIdShop($id_shop = 0)
 	{
-		$sql = 'SELECT ep.`id_ebay_profile`, ep.`ebay_user_identifier`, ep.`ebay_site_id`, s.`name`, ep.`id_lang`, l.`name` AS `language_name`
+		$sql = 'SELECT ep.`id_ebay_profile`, ep.`ebay_user_identifier`, ep.`ebay_site_id`, ep.`id_lang`, l.`name` AS `language_name`
+				'.(version_compare(_PS_VERSION_, '1.5', '>') ? ',s.`name`' : '').'
 				FROM `'._DB_PREFIX_.'ebay_profile` ep
                 LEFT JOIN `'._DB_PREFIX_.'lang` l ON (ep.`id_lang` = l.`id_lang`)
-                LEFT JOIN `'._DB_PREFIX_.'shop` s ON (ep.`id_shop` = s.`id_shop`)
+                '.(version_compare(_PS_VERSION_, '1.5', '>') ? 'LEFT JOIN `'._DB_PREFIX_.'shop` s ON (ep.`id_shop` = s.`id_shop`)' : '').'
 				'.($id_shop != 0 ? ' WHERE ep.`id_shop` = '.(int)$id_shop : '');
 		return Db::getInstance()->executeS($sql);
 	}
