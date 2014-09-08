@@ -74,17 +74,17 @@ function upgrade_module_1_8($module)
         $ebay_profile->setConfiguration('EBAY_SHOP_COUNTRY', $ebay_shop_country);
         
         // update ebay_category
-        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_category', array('id_country' => $ebay_site_id), 'UPDATE', '`id_country` = 0');
+        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_category', array('id_country' => $ebay_site_id), 'UPDATE');
 
         if (Configuration::get('EBAY_CATEGORY_LOADED'))
             Configuration::updateValue('EBAY_CATEGORY_LOADED_'.$ebay_site_id, 1, false, 0, 0);
         
         // update ebay_category_specific
-        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_category_specific', array('ebay_site_id' => $ebay_site_id), 'UPDATE', '`ebay_site_id` = 0');
+        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_category_specific', array('ebay_site_id' => $ebay_site_id), 'UPDATE');
         
         // update ebay_product_configuration
         $ebay_profile = EbayProfile::getCurrent();
-        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_product_configuration', array('id_ebay_profile' => $ebay_profile->id), 'UPDATE', '`id_ebay_profile` = 0');        
+        Db::getInstance()->autoExecute(_DB_PREFIX_.'ebay_product_configuration', array('id_ebay_profile' => $ebay_profile->id), 'UPDATE');        
         
         
     }
