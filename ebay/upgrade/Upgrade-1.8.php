@@ -43,12 +43,22 @@ function upgrade_module_1_8($module)
 
         // set id_lang if not set
         if (!$profile['id_lang']) {
-            $ebay_profile->id_lang = (int)(Configuration::get('PS_LANG_DEFAULT');
+            $ebay_profile->id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
             $ebay_profile->save();
         }
         
+        if ($ebay_profile->ebay_site_id)
+            $ebay_shop_country = EbayCountrySpec::getIsoCodeBySiteId($ebay_profile->ebay_site_id);
+        else {
+            if ($ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT'))
+                $ebay_shop_country = $ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT');
+            else {
+                $ebay_shop_country = 'fr';                
+                $ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', $ebay_shop_country);
+            }
+        }
+        
         // we set EBAY_SHOP_COUNTRY
-        $ebay_shop_country = EbayCountrySpec::getIsoCodeBySiteId($ebay_profile->ebay_site_id);
         $ebay_profile->setConfiguration('EBAY_SHOP_COUNTRY', $ebay_shop_country);
     }
     
