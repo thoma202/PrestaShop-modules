@@ -43,7 +43,7 @@ function upgrade_module_1_8($module)
 
         // set id_lang if not set
         if (!$profile['id_lang']) {
-            $ebay_profile->id_lang = (int)(Configuration::get('PS_LANG_DEFAULT');
+            $ebay_profile->id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
             $ebay_profile->save();
         }
         
