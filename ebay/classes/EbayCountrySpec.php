@@ -382,4 +382,12 @@ class EbayCountrySpec
         
         return null;
     }        
+
+    public static function getSiteIdByIsoCode($iso_code) {
+    	foreach(self::$country_data as $country)
+            if ($country['iso_code'] == $iso_code)
+                return $country['site_id'];
+        
+        return null;
+    }
 }

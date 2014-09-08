@@ -26,36 +26,44 @@
 
 function upgrade_module_1_8($module)
 {
-	include(dirname(__FILE__).'/sql/sql-upgrade-1-8.php');
+    include(dirname(__FILE__).'/sql/sql-upgrade-1-8.php');
 
-	if (!empty($sql) && is_array($sql))
-	{
-		foreach ($sql as $request)
-			if (!Db::getInstance()->execute($request))
-				return false;
-	}
+    if (!empty($sql) && is_array($sql))
+    {
+        foreach ($sql as $request)
+            if (!Db::getInstance()->execute($request))
+                return false;
+    }
     
     // upgrade existing profiles
     $profiles = EbayProfile::getProfilesByIdShop();
-    foreach ($profiles as $profile) {
+    foreach ($profiles as $profile) 
+    {
         
         $ebay_profile = new EbayProfile($profile['id_ebay_profile']);
 
         // set id_lang if not set
-        if (!$profile['id_lang']) {
+        if (!$profile['id_lang']) 
+        {
             $ebay_profile->id_lang = (int)Configuration::get('PS_LANG_DEFAULT');
             $ebay_profile->save();
         }
         
         if ($ebay_profile->ebay_site_id)
             $ebay_shop_country = EbayCountrySpec::getIsoCodeBySiteId($ebay_profile->ebay_site_id);
-        else {
+        else 
+        {
             if ($ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT'))
+            {
                 $ebay_shop_country = $ebay_profile->getConfiguration('EBAY_COUNTRY_DEFAULT');
-            else {
-                $ebay_shop_country = 'fr';                
+            }
+            else 
+            {
+                $ebay_shop_country = 'fr'; 
                 $ebay_profile->setConfiguration('EBAY_COUNTRY_DEFAULT', $ebay_shop_country);
             }
+            $ebay_profile->ebay_site_id = EbayCountrySpec::getSiteIdByIsoCode($ebay_shop_country);
+            $ebay_profile->save();
         }
         
         // we set EBAY_SHOP_COUNTRY
@@ -63,5 +71,5 @@ function upgrade_module_1_8($module)
     }
     
     
-	return true;
+    return true;
 }
