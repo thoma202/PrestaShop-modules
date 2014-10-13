@@ -41,12 +41,11 @@ if ($quantity && $quantity > 0)
 	$id_product_attribute = (int)Tools::getValue('id_product_attribute');
 	$product_quantity = Product::getQuantity($id_product, $id_product_attribute);
 	$product = new Product($id_product);
-	var_dump($product);
 
 	if ($product_quantity > 0)
 		die('1');
 
 	if($product_quantity <= 0 && $product->isAvailableWhenOutOfStock((int)$product->out_of_stock))
-		die;('1');
+		die('1');
 }
 die('0');
