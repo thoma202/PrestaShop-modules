@@ -491,6 +491,9 @@ class PaypalExpressCheckout extends Paypal
 		else
 			$url = '/websc&cmd=_express-checkout';
 
+		if(($this->method == 'SetExpressCheckout') && (Configuration::get('PAYPAL_COUNTRY_DEFAULT') == 1) && ($this->type == 'payment_cart'))
+			$url .= '&useraction=commit';
+		
 		Tools::redirectLink('https://'.$this->getPayPalURL().$url.'&token='.urldecode($this->token));
 		exit(0);
 	}
