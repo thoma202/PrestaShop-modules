@@ -33,6 +33,7 @@ include_once(_PS_MODULE_DIR_.'paypal/paypal_orders.php');
 include_once(_PS_MODULE_DIR_.'paypal/paypal_tools.php');
 include_once(_PS_MODULE_DIR_.'paypal/paypal_login/paypal_login.php');
 include_once(_PS_MODULE_DIR_.'paypal/paypal_login/PayPalLoginUser.php');
+include_once(_PS_MODULE_DIR_.'paypal/classes/PaypalCapture.php');
 
 define('WPS', 1); //Paypal Integral
 define('HSS', 2); //Paypal Integral Evolution
@@ -83,7 +84,7 @@ class PayPal extends PaymentModule
 	{
 		$this->name = 'paypal';
 		$this->tab = 'payments_gateways';
-		$this->version = '3.7.2';
+		$this->version = '3.8.0';
 		$this->author = 'PrestaShop';
 
 		$this->currencies = true;
@@ -159,7 +160,7 @@ class PayPal extends PaymentModule
 	public function runUpgrades($install = false)
 	{
 		if (version_compare(_PS_VERSION_, '1.5', '<'))
-			foreach (array('2.8', '3.0', '3.7') as $version)
+			foreach (array('2.8', '3.0', '3.7','3.8') as $version)
 			{
 				$file = dirname(__FILE__).'/upgrade/install-'.$version.'.php';
 				if (Configuration::get('PAYPAL_VERSION') < $version && file_exists($file))
@@ -615,8 +616,40 @@ class PayPal extends PaymentModule
 
 	public function hookAdminOrder($params)
 	{
-		if (Tools::isSubmit('submitPayPalCapture'))
-			$this->_doCapture($params['id_order']);
+		if (Tools::isSubmit('submitPayPalCapture')){
+			if($capture_amount = Tools::getValue('totalCaptureMoney')){
+				if($capture_amount = PaypalCapture::parsePrice($capture_amount))
+				{
+					if(Validate::isFloat($capture_amount)){
+						$capture_amount = Tools::ps_round($capture_amount, '6');
+						$ord = new Order((int)$params['id_order']);
+						$cpt = new PaypalCapture();
+						
+						if(($capture_amount > Tools::ps_round(0, '6')) &&  (Tools::ps_round($cpt->getRestToPaid($ord), '6') >= $capture_amount)){
+							if($capture_amount > Tools::ps_round((float)$ord->total_paid, '6'))
+								$capture_amount = Tools::ps_round((float)$ord->total_paid, '6');
+							$this->_doCapture($params['id_order'], $capture_amount);
+						}
+						else{
+							//nombre négatif ou plus grand de ce qu'il reste
+							die;
+						}
+					}
+					else{
+						//not Float
+						die;
+					}
+				}
+				else
+				{
+					// No price syntax
+				}
+			}
+			else{
+				//Nombre egal à 0 aussi
+				die;
+			}
+		}
 		elseif (Tools::isSubmit('submitPayPalRefund'))
 			$this->_doTotalRefund($params['id_order']);
 
@@ -634,6 +667,9 @@ class PayPal extends PaymentModule
 		if (count($admin_templates) > 0)
 		{
 			$order = new Order((int)$params['id_order']);
+			$currency = new Currency($order->id_currency);
+			$cpt = new PaypalCapture();
+			$cpt->id_order = (int)$order->id;
 
 			if (version_compare(_PS_VERSION_, '1.5', '>='))
 				$order_state = $order->current_state;
@@ -647,6 +683,9 @@ class PayPal extends PaymentModule
 					'module_name' => $this->name,
 					'order_state' => $order_state,
 					'params' => $params,
+					'id_currency' => $currency->getSign(),
+					'rest_to_capture' => Tools::ps_round($cpt->getRestToPaid($order), '6'),
+					'list_captures' => $cpt->getListCaptured(),
 					'ps_version' => _PS_VERSION_
 				)
 			);
@@ -1156,44 +1195,65 @@ class PayPal extends PaymentModule
 		Tools::redirect($_SERVER['HTTP_REFERER']);
 	}
 
-	private function _doCapture($id_order)
+	private function _doCapture($id_order, $capture_amount=false)
 	{
+
 		$paypal_order = PayPalOrder::getOrderById((int)$id_order);
 		if (!$this->isPayPalAPIAvailable() || !$paypal_order)
 			return false;
-
+		
 		$order = new Order((int)$id_order);
 		$currency = new Currency((int)$order->id_currency);
 
+		
+
+		if(!$capture_amount)
+			$capture_amount = (float)$order->total_paid;
+
 		$paypal_lib	= new PaypalLib();
 		$response = $paypal_lib->makeCall($this->getAPIURL(), $this->getAPIScript(), 'DoCapture',
-			'&'.http_build_query(array('AMT' => (float)$order->total_paid, 'AUTHORIZATIONID' => $paypal_order['id_transaction'],
-			'CURRENCYCODE' => $currency->iso_code, 'COMPLETETYPE' => 'Complete'), '', '&'));
+			'&'.http_build_query(array('AMT' => $capture_amount, 'AUTHORIZATIONID' => $paypal_order['id_transaction'],
+			'CURRENCYCODE' => $currency->iso_code, 'COMPLETETYPE' => 'NotComplete'), '', '&'));
 		$message = $this->l('Capture operation result:').'<br>';
 
 		foreach ($response as $key => $value)
 			$message .= $key.': '.$value.'<br>';
 
+		
+		$capture = new PaypalCapture();
+		$capture->id_order = (int)$id_order;
+		$capture->capture_amount = (float)$capture_amount;
+
 		if ((array_key_exists('ACK', $response)) && ($response['ACK'] == 'Success') && ($response['PAYMENTSTATUS'] == 'Completed'))
 		{
-			$order_history = new OrderHistory();
-			$order_history->id_order = (int)$id_order;
+			$capture->result = pSQL($response['PAYMENTSTATUS']);
+			if($capture->save()){
+				if(!($capture->getRestToCapture($capture->id_order))){
+					//plus d'argent a capturer
+					if (!Db::getInstance()->Execute('
+					UPDATE `'._DB_PREFIX_.'paypal_order`
+					SET `capture` = 0, `payment_status` = \''.pSQL($response['PAYMENTSTATUS']).'\', `id_transaction` = \''.pSQL($response['TRANSACTIONID']).'\'
+					WHERE `id_order` = '.(int)$id_order))
+					die(Tools::displayError('Error when updating PayPal database'));
 
-			if (version_compare(_PS_VERSION_, '1.5', '<'))
-				$order_history->changeIdOrderState(Configuration::get('PS_OS_WS_PAYMENT'), (int)$id_order);
-			else
-				$order_history->changeIdOrderState(Configuration::get('PS_OS_WS_PAYMENT'), $order);
-			$order_history->addWithemail();
-			$message .= $this->l('Order finished with PayPal!');
+					$order_history = new OrderHistory();
+					$order_history->id_order = (int)$id_order;
+
+					if (version_compare(_PS_VERSION_, '1.5', '<'))
+						$order_history->changeIdOrderState(Configuration::get('PS_OS_WS_PAYMENT'), (int)$id_order);
+					else
+						$order_history->changeIdOrderState(Configuration::get('PS_OS_WS_PAYMENT'), $order);
+					$order_history->addWithemail();
+					$message .= $this->l('Order finished with PayPal!');
+				}
+			}			
 		}
-		elseif (isset($response['PAYMENTSTATUS']))
+		elseif (isset($response['PAYMENTSTATUS'])){
+			$capture->result = pSQL($response['PAYMENTSTATUS']);
+			$capture->save();
 			$message .= $this->l('Transaction error!');
-
-		if (!Db::getInstance()->Execute('
-			UPDATE `'._DB_PREFIX_.'paypal_order`
-			SET `capture` = 0, `payment_status` = \''.pSQL($response['PAYMENTSTATUS']).'\', `id_transaction` = \''.pSQL($response['TRANSACTIONID']).'\'
-			WHERE `id_order` = '.(int)$id_order))
-			die(Tools::displayError('Error when updating PayPal database'));
+		}
+		
 
 		$this->_addNewPrivateMessage((int)$id_order, $message);
 
