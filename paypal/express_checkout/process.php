@@ -200,6 +200,9 @@ class PaypalExpressCheckout extends Paypal
 		$fields['TOKEN'] = $this->token;
 		$fields['PAYERID'] = $this->payer_id;
 
+		if(Configuration::get('PAYPAL_COUNTRY_DEFAULT') == 1)
+			$fields['BANKTXNPENDINGURL']='';
+
 		if (count($this->product_list) <= 0)
 			$this->initParameters();
 
