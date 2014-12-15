@@ -152,6 +152,9 @@ class PaypalExpressCheckout extends Paypal
 
 		if ($access_token)
 			$fields['IDENTITYACCESSTOKEN'] = $access_token;
+		
+		if(Country::getIsoById(Configuration::get('PAYPAL_COUNTRY_DEFAULT')) == 'de')
+			$fields['BANKTXNPENDINGURL']='payment.php?banktxnpendingurl=true';
 
 		$this->callAPI($fields);
 		$this->_storeToken();
